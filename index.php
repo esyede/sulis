@@ -3,8 +3,11 @@
 require 'src/Sulis/Sulis.php';
 
 Sulis::route('/', function () {
-    $validator = Sulis::validator();
+    $jwt = Sulis::jwt();
+    $jwtEncode = $jwt->encode(['name' => 'sulis'], 'test');
+    $jwtDecode = $jwt->decode($jwtEncode, 'test');
 
+    $validator = Sulis::validator();
     $validator->make($_REQUEST)
         ->rule('required', ['user_name', 'user_email'])
         ->rule('email', 'user_email')
@@ -14,7 +17,10 @@ Sulis::route('/', function () {
         'success' => true,
         'message' => 'Validation passes',
         'errors' => [],
-        'data' => [],
+        'data' => [
+            'jwt_encode_test' => $jwtEncode,
+            'jwt_decode_test' => $jwtDecode,
+        ],
     ];
 
     if (! $validator->validate()) {
@@ -22,7 +28,10 @@ Sulis::route('/', function () {
             'success' => false,
             'message' => 'Validation failed',
             'errors' => $validator->errors(),
-            'data' => [],
+            'data' => [
+                'jwt_encode_test' => $jwtEncode,
+                'jwt_decode_test' => $jwtDecode,
+            ],
         ];
     }
 

@@ -6,8 +6,9 @@ namespace sulis;
 
 use ErrorException;
 use Exception;
-use Sulis\Dispatcher;
 use Sulis\DB;
+use Sulis\Dispatcher;
+use Sulis\Jwt;
 use Sulis\Loader;
 use Sulis\Request;
 use Sulis\Response;
@@ -63,6 +64,7 @@ class Engine
         $this->loader->register('response', Response::class);
         $this->loader->register('router', Router::class);
         $this->loader->register('db', DB::class);
+        $this->loader->register('jwt', Jwt::class);
         $this->loader->register('validator', Validator::class);
         $this->loader->register('view', View::class, [], function ($view) use ($self) {
             $view->setViewFolder($self->get('sulis.views.path'));
