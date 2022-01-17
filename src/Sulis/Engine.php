@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace sulis;
+namespace Sulis;
 
 use ErrorException;
 use Exception;

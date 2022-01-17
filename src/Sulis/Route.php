@@ -22,7 +22,7 @@ final class Route
         $this->pass = $pass;
     }
 
-    public function matchUrl(string $url, bool $case_sensitive = false): bool
+    public function matchUrl(string $url, bool $caseSensitive = false): bool
     {
         if ('*' === $this->pattern || $this->pattern === $url) {
             return true;
@@ -59,7 +59,7 @@ final class Route
 
         $regex .= ('/' === $last_char) ? '?' : '/?';
 
-        if (preg_match('#^' . $regex . '(?:\?.*)?$#' . ($case_sensitive ? '' : 'i'), $url, $matches)) {
+        if (preg_match('#^' . $regex . '(?:\?.*)?$#' . ($caseSensitive ? '' : 'i'), $url, $matches)) {
             foreach ($ids as $k => $v) {
                 $this->params[$k] = array_key_exists($k, $matches) ? urldecode($matches[$k]) : null;
             }

@@ -1,5 +1,4 @@
 # What is Sulis?
-
 A tiny php framework
 
 ```php
@@ -12,16 +11,15 @@ Sulis::route('/', function () {
 Sulis::start();
 ```
 
-# Requirements
+<!-- MarkdownTOC autolink="true" autoanchor="true" levels="1,3" bracket="round" lowercase="only_ascii" -->
 
+# Requirements
 Sulis membutuhkan `PHP 7.4` atau lebih tinggi.
 
 # License
-
 Sulis dirilis di bawah lisensi [MIT](https://github.com/esyede/sulis/blob/main/LICENSE).
 
 # Installation
-
 **1. Unduh file**
 
 Jika anda menggunakan [Composer](https://getcomposer.org/), anda dapat menjalankan perintah berikut:
