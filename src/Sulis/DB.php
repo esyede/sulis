@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Sulis;
 
 use Exception;
-use PDOException;
 use ReflectionClass;
 
 class DB
@@ -260,7 +259,7 @@ class DB
     public function limit(int $limit, ?int $offset = null): self
     {
         if ($limit !== null) {
-            $this->limit = 'LIMIT '.$limit;
+            $this->limit = 'LIMIT ' . $limit;
         }
 
         if ($offset !== null) {
@@ -273,7 +272,7 @@ class DB
     public function offset(int $offset, ?int $limit = null): self
     {
         if ($offset !== null) {
-            $this->offset = 'OFFSET '.$offset;
+            $this->offset = 'OFFSET ' . $offset;
         }
 
         if ($limit !== null) {
@@ -562,7 +561,7 @@ class DB
                             $this->affected_rows = $result->rowCount();
                             $this->insert_id = $this->db->lastInsertId();
                         }
-                    } catch (PDOException $ex) {
+                    } catch (\PDOException $ex) {
                         $error = $ex->getMessage();
                     }
                     break;
@@ -628,7 +627,7 @@ class DB
                         $error = $this->db->lastErrorMsg();
                     } else {
                         $this->num_rows = 0;
-                        $this->affected_rows = ($result) ? $this->db->changes() : 0;
+                        $this->affected_rows = $result ? $this->db->changes() : 0;
                         $this->insert_id = $this->db->lastInsertRowId();
                     }
                     break;
@@ -636,10 +635,10 @@ class DB
 
             if ($error !== null) {
                 if ($this->show_sql) {
-                    $error .= "\nSQL: ".$this->sql;
+                    $error .= "\nSQL: " . $this->sql;
                 }
 
-                throw new Exception('Database error: '.$error);
+                throw new Exception('Database error: ' . $error);
             }
         }
 
@@ -674,7 +673,7 @@ class DB
         } else {
             switch ($this->db_type) {
                 case 'pdo':
-                    $data = $result->fetchAll(PDO::FETCH_ASSOC);
+                    $data = $result->fetchAll(\PDO::FETCH_ASSOC);
                     $this->num_rows = count($data);
                     break;
 
