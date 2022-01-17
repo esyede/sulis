@@ -235,34 +235,12 @@ class Validator
 
     protected function validateContains($field, $value, $params)
     {
-        if (! isset($params[0])) {
+        if (! isset($params[0]) || ! is_string($params[0]) || ! is_string($value)) {
             return false;
         }
 
-        if (! is_string($params[0]) || ! is_string($value)) {
-            return false;
-        }
-
-        $strict = true;
-
-        if (isset($params[1])) {
-            $strict = (bool)$params[1];
-        }
-
-        if ($strict) {
-            if (function_exists('mb_strpos')) {
-                $isContains = mb_strpos($value, $params[0]) !== false;
-            } else {
-                $isContains = strpos($value, $params[0]) !== false;
-            }
-        } else {
-            if (function_exists('mb_stripos')) {
-                $isContains = mb_stripos($value, $params[0]) !== false;
-            } else {
-                $isContains = stripos($value, $params[0]) !== false;
-            }
-        }
-        return $isContains;
+        $strict = isset($params[1]) ? (bool) $params[1] : true;
+        return $strict ? (strpos($value, $params[0]) !== false) : (stripos($value, $params[0]) !== false);
     }
 
     protected function validateSubset($field, $value, $params)
@@ -423,7 +401,7 @@ class Validator
             }
         }
 
-        $numberIsValid = function () use ($value) {
+        $isNumeric = function () use ($value) {
             $number = preg_replace('/[^0-9]+/', '', $value);
             $strlen = strlen($number);
             $sum = 0;
@@ -433,19 +411,19 @@ class Validator
             }
 
             for ($i = 0; $i < $strlen; $i++) {
-                $digit = (int)substr($number, $strlen - $i - 1, 1);
+                $digit = (int) substr($number, $strlen - $i - 1, 1);
 
                 if ($i % 2 == 1) {
-                    $sub_total = $digit * 2;
+                    $subtotal = $digit * 2;
 
-                    if ($sub_total > 9) {
-                        $sub_total = ($sub_total - 10) + 1;
+                    if ($subtotal > 9) {
+                        $subtotal = ($subtotal - 10) + 1;
                     }
                 } else {
-                    $sub_total = $digit;
+                    $subtotal = $digit;
                 }
 
-                $sum += $sub_total;
+                $sum += $subtotal;
             }
 
             if ($sum > 0 && $sum % 10 == 0) {
@@ -455,7 +433,7 @@ class Validator
             return false;
         };
 
-        if ($numberIsValid()) {
+        if ($isNumeric()) {
             if (! isset($cards)) {
                 return true;
             } else {
