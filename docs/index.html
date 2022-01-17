@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Sulis</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta name="description" content="Sulis - A tiny framework">
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <link rel="stylesheet" href="//esyede.github.io/sulis/_assets/css/docs.css" title="docs">
+    </head>
+    <body>
+        <div id="app"></div>
+        <script>
+        window.$docsify = {
+            name: 'Sulis',
+            repo: 'https://github.com/esyede/sulis',
+            homepage: 'README.md',
+            auto2top: true,
+            coverpage: true,
+            mergeNavbar: true,
+            loadNavbar: true,
+            loadSidebar: true,
+            notFoundPage: true,
+            formatUpdated: '{MM}/{DD} {HH}:{mm}',
+            plugins: [
+                function (hook, vm) {
+                    hook.beforeEach(function (html) {
+                        if (/githubusercontent\.com/.test(vm.route.file)) {
+                            url = vm.route.file
+                                .replace('raw.githubusercontent.com', 'github.com')
+                                .replace(/\/master/, '/blob/master')
+                        } else {
+                            url = 'https://github.com/esyede/sulis/blob/master/docs/' + vm.route.file
+                        }
+
+                        var editHtml = '[:memo: Edit di Github](' + url + ')\n'
+
+                        return editHtml + html
+                  })
+                },
+            ],
+            markdown: {
+                gfm: true,
+                tables: true,
+                smartypants: true,
+            },
+            scrollToTop: {
+                auto: true,
+                text: 'Top',
+                right: 15,
+                bottom: 15,
+                offset: 500
+            },
+            search: {
+                maxAge : 86400000,
+                paths: 'auto',
+                placeholder: 'Ketik untuk mencari..',
+                noData: 'Tidak ada data yang cocok.',
+                depth: 4,
+                hideOtherSidebarContent: true,
+            },
+            copyCode: {
+                buttonText : 'salin',
+                errorText  : 'error!',
+                successText: 'disalin!'
+            },
+            pagination: {
+                previousText: 'SEBELUMNYA',
+                nextText: 'SELANJUTNYA',
+                crossChapter: true,
+            },
+            'flexible-alerts': {
+                style:   'callout',
+                tip:     { label: "Tips"    },
+                note:    { label: "Info"    },
+                warning: { label: "Catatan" },
+                danger:  { label: "Awas!"   }
+            },
+            tabs: {
+                persist    : false,
+                sync       : false,
+                tabComments: false,
+                tabHeadings: false
+            }
+        }
+        </script>
+        <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
+        <script src="//unpkg.com/docsify/lib/plugins/search.min.js"></script>
+        <script src="//unpkg.com/docsify-edit-on-github/index.js"></script>
+        <script src="//unpkg.com/docsify-copy-code@2"></script>
+        <script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
+        <script src="//unpkg.com/docsify-plugin-flexible-alerts"></script>
+        <script src="//unpkg.com/docsify-scroll-to-top/dist/docsify-scroll-to-top.min.js"></script>
+        <script src="//unpkg.com/docsify/lib/plugins/emoji.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/docsify-tabs@1"></script>
+
+        <script src="//unpkg.com/prismjs/components/prism-php.min.js"></script>
+        <script src="//unpkg.com/prismjs/components/prism-php-extras.min.js"></script>
+        <script src="//unpkg.com/prismjs/components/prism-sql.min.js"></script>
+        <script src="//unpkg.com/prismjs/components/prism-apacheconf.min.js"></script>
+        <script src="//unpkg.com/prismjs/components/prism-javascript.min.js"></script>
+        <script src="//unpkg.com/prismjs/components/prism-css.min.js"></script>
+        <script src="//unpkg.com/prismjs/components/prism-css-extras.min.js"></script>
+        <script src="//unpkg.com/prismjs/components/prism-diff.min.js"></script>
+        <script src="//unpkg.com/prismjs/components/prism-json.min.js"></script>
+        <script src="//unpkg.com/prismjs/components/prism-markdown.min.js"></script>
+        <script src="//unpkg.com/prismjs/components/prism-bash.min.js"></script>
+        <script src="//unpkg.com/prismjs/components/prism-git.min.js"></script>
+        <script src="//unpkg.com/prismjs/components/prism-ini.min.js"></script>
+    </body>
+</html>
