@@ -149,7 +149,7 @@ class DB
 
             if (is_array($value)) {
                 $condition = (strpos($operator, '@') === false) ? ' IN ' : $condition;
-                $value = '('.implode(',', array_map(array($this, 'quote'), $value)).')';
+                $value = '(' . implode(',', array_map([$this, 'quote'], $value)) . ')';
             } else {
                 $value = ($escape && ! is_numeric($value)) ? $this->quote($value) : $value;
             }
@@ -234,7 +234,7 @@ class DB
             $field .= ' ' . $direction;
         }
 
-        $fields = (is_array($field)) ? implode(', ', $field) : $field;
+        $fields = is_array($field) ? implode(', ', $field) : $field;
         $this->order .= $join . ' ' . $fields;
 
         return $this;
