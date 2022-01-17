@@ -65,12 +65,9 @@ class Validator
 
     protected function validateRequired($field, $value, $params = [])
     {
-        if (isset($params[0]) && (bool)$params[0]) {
-            $find = $this->getPart($this->fields, explode('.', $field), true);
-            return $find[1];
-        }
-
-        return (is_null($value) || (is_string($value) && trim($value) === ''));
+        return (isset($params[0]) && (bool)$params[0])
+            ? $this->getPart($this->fields, explode('.', $field), true)[1]
+            : (is_null($value) || (is_string($value) && trim($value) === ''));
     }
 
     protected function validateEquals($field, $value, array $params)
@@ -400,11 +397,9 @@ class Validator
                 ];
 
                 if (isset($cardType)) {
-                    if (! isset($cards) && ! in_array($cardType, array_keys($cardRegex))) {
-                        return false;
-                    }
-
-                    return (preg_match($cardRegex[$cardType], $value) === 1);
+                    return (! isset($cards) && ! in_array($cardType, array_keys($cardRegex)))
+                        ? false
+                        : (preg_match($cardRegex[$cardType], $value) === 1);
                 } elseif (isset($cards)) {
                     foreach ($cards as $card) {
                         if (in_array($card, array_keys($cardRegex)) && preg_match($cardRegex[$card], $value) === 1) {
@@ -497,11 +492,7 @@ class Validator
             }
         }
 
-        if ($conditionallyReq && (is_null($value) || is_string($value) && trim($value) === '')) {
-            return false;
-        }
-
-        return true;
+        return ($conditionallyReq && (is_null($value) || is_string($value) && trim($value) === ''));
     }
 
     protected function validateOptional($field, $value, $params)
