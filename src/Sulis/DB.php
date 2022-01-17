@@ -4,6 +4,7 @@ namespace Sulis;
 
 use Exception;
 use PDOException;
+use ReflectionClass;
 
 class DB
 {
@@ -403,7 +404,7 @@ class DB
         } elseif (is_array($db)) {
             switch ($db['type']) {
                 case 'mysqli':
-                    $this->db = new mysqli($db['hostname'], $db['username'], $db['password'], $db['database']);
+                    $this->db = new \mysqli($db['hostname'], $db['username'], $db['password'], $db['database']);
 
                     if ($this->db->connect_error) {
                         throw new Exception('Connection error: ' . $this->db->connect_error);
@@ -441,7 +442,7 @@ class DB
                     break;
 
                 case 'sqlite3':
-                    $this->db = new SQLite3($db['database']);
+                    $this->db = new \SQLite3($db['database']);
                     break;
 
                 case 'pdomysql':
@@ -452,7 +453,7 @@ class DB
                         $db['database']
                     );
 
-                    $this->db = new PDO($dsn, $db['username'], $db['password']);
+                    $this->db = new \PDO($dsn, $db['username'], $db['password']);
                     $db['type'] = 'pdo';
                     break;
 
@@ -466,12 +467,12 @@ class DB
                         $db['password']
                     );
 
-                    $this->db = new PDO($dsn);
+                    $this->db = new \PDO($dsn);
                     $db['type'] = 'pdo';
                     break;
 
                 case 'pdosqlite':
-                    $this->db = new PDO('sqlite:/' . $db['database']);
+                    $this->db = new \PDO('sqlite:/' . $db['database']);
                     $db['type'] = 'pdo';
                     break;
             }
@@ -818,12 +819,12 @@ class DB
         } elseif (is_array($cache)) {
             switch ($cache['type']) {
                 case 'memcache':
-                    $this->cache = new Memcache();
+                    $this->cache = new \Memcache();
                     $this->cache->connect($cache['hostname'], $cache['port']);
                     break;
 
                 case 'memcached':
-                    $this->cache = new Memcached();
+                    $this->cache = new \Memcached();
                     $this->cache->addServer($cache['hostname'], $cache['port']);
                     break;
 
@@ -930,9 +931,9 @@ class DB
 
         switch ($this->cache_type) {
             case 'memcached': return $this->cache->delete($key);
-            case 'memcache': return $this->cache->delete($key);
-            case 'apc': return apc_delete($key);
-            case 'xcache': return xcache_unset($key);
+            case 'memcache':  return $this->cache->delete($key);
+            case 'apc':       return apc_delete($key);
+            case 'xcache':    return xcache_unset($key);
 
             case 'file':
             if (is_file($file = $this->cache . '/' . md5($key))) {
