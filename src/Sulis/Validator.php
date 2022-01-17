@@ -160,7 +160,6 @@ class Validator
         return strlen($value);
     }
 
-
     protected function validateMin($field, $value, $params)
     {
         if (! is_numeric($value)) {
@@ -172,7 +171,6 @@ class Validator
         }
     }
 
-
     protected function validateMax($field, $value, $params)
     {
         if (! is_numeric($value)) {
@@ -183,7 +181,6 @@ class Validator
             return $params[0] >= $value;
         }
     }
-
 
     protected function validateBetween($field, $value, $params)
     {
@@ -198,7 +195,6 @@ class Validator
         [$min, $max] = $params[0];
         return $this->validateMin($field, $value, [$min]) && $this->validateMax($field, $value, [$max]);
     }
-
 
     protected function validateIn($field, $value, $params)
     {
@@ -216,7 +212,6 @@ class Validator
         return in_array($value, $params[0], $strict);
     }
 
-
     protected function validateListContains($field, $value, $params)
     {
         $forceAsAssociative = false;
@@ -233,12 +228,10 @@ class Validator
         return in_array($params[0], $value, $strict);
     }
 
-
     protected function validateNotIn($field, $value, $params)
     {
         return ! $this->validateIn($field, $value, $params);
     }
-
 
     protected function validateContains($field, $value, $params)
     {
@@ -272,7 +265,6 @@ class Validator
         return $isContains;
     }
 
-
     protected function validateSubset($field, $value, $params)
     {
         if (! isset($params[0])) {
@@ -289,36 +281,30 @@ class Validator
         return array_diff($value, $intersect) === array_diff($intersect, $value);
     }
 
-
     protected function validateContainsUnique($field, $value)
     {
         return is_array($value) ? ($value === array_unique($value, SORT_REGULAR)) : false;
     }
-
 
     protected function validateIp($field, $value)
     {
         return filter_var($value, FILTER_VALIDATE_IP) !== false;
     }
 
-
     protected function validateIpv4($field, $value)
     {
         return filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false;
     }
-
 
     protected function validateIpv6($field, $value)
     {
         return filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) !== false;
     }
 
-
     protected function validateEmail($field, $value)
     {
         return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
     }
-
 
     protected function validateAscii($field, $value)
     {
@@ -328,7 +314,6 @@ class Validator
 
         return 0 === preg_match('/[^\x00-\x7F]/', $value);
     }
-
 
     protected function validateEmailDNS($field, $value)
     {
@@ -345,7 +330,6 @@ class Validator
         return false;
     }
 
-
     protected function validateUrl($field, $value)
     {
         foreach ($this->validUrlPrefixes as $prefix) {
@@ -356,7 +340,6 @@ class Validator
 
         return false;
     }
-
 
     protected function validateUrlActive($field, $value)
     {
@@ -370,43 +353,36 @@ class Validator
         return false;
     }
 
-
     protected function validateAlpha($field, $value)
     {
         return preg_match('/^([a-z])+$/i', (string) $value);
     }
-
 
     protected function validateAlphaNum($field, $value)
     {
         return preg_match('/^([a-z0-9])+$/i', (string) $value);
     }
 
-
     protected function validateSlug($field, $value)
     {
         return is_array($value) ? false : preg_match('/^([-a-z0-9_-])+$/i', (string) $value);
     }
-
 
     protected function validateRegex($field, $value, $params)
     {
         return preg_match($params[0], (string) $value);
     }
 
-
     protected function validateDate($field, $value)
     {
         return ($value instanceof DateTime) ? true : (strtotime($value) !== false);
     }
-
 
     protected function validateDateFormat($field, $value, $params)
     {
         $parsed = date_parse_from_format($params[0], $value);
         return $parsed['error_count'] === 0 && $parsed['warning_count'] === 0;
     }
-
 
     protected function validateDateBefore($field, $value, $params)
     {
@@ -416,7 +392,6 @@ class Validator
         return $vtime < $ptime;
     }
 
-
     protected function validateDateAfter($field, $value, $params)
     {
         $vtime = ($value instanceof DateTime) ? $value->getTimestamp() : strtotime($value);
@@ -425,12 +400,10 @@ class Validator
         return $vtime > $ptime;
     }
 
-
     protected function validateBoolean($field, $value)
     {
         return is_bool($value);
     }
-
 
     protected function validateCreditCard($field, $value, $params)
     {
@@ -542,7 +515,6 @@ class Validator
         return $isInstanceOf;
     }
 
-
     protected function validateRequiredWith($field, $value, $params, $fields)
     {
         $conditionallyReq = false;
@@ -576,7 +548,6 @@ class Validator
 
         return true;
     }
-
 
     protected function validateRequiredWithout($field, $value, $params, $fields)
     {
@@ -612,7 +583,6 @@ class Validator
         return true;
     }
 
-
     protected function validateOptional($field, $value, $params)
     {
         return true;
@@ -639,12 +609,10 @@ class Validator
         return true;
     }
 
-
     public function data()
     {
         return $this->fields;
     }
-
 
     public function errors($field = null)
     {
@@ -654,7 +622,6 @@ class Validator
 
         return $this->errors;
     }
-
 
     public function error($field, $message, array $params = [])
     {
@@ -684,13 +651,11 @@ class Validator
         $this->errors[$field][] = vsprintf($message, $values);
     }
 
-
     public function message($message)
     {
         $this->validations[count($this->validations) - 1]['message'] = $message;
         return $this;
     }
-
 
     public function reset()
     {
@@ -813,24 +778,20 @@ class Validator
         return count($this->errors()) === 0;
     }
 
-
     public function stopOnFirstFail($stop = true)
     {
         $this->bail = (bool) $stop;
     }
-
 
     protected function getRules()
     {
         return array_merge($this->instanceRules, static::$rules);
     }
 
-
     protected function getRuleMessages()
     {
         return array_merge($this->instanceRuleMessage, static::$ruleMessages);
     }
-
 
     protected function hasRule($name, $field)
     {
@@ -852,7 +813,6 @@ class Validator
         }
     }
 
-
     public function addInstanceRule($name, $callback, $message = null)
     {
         static::assertRuleCallback($callback);
@@ -860,7 +820,6 @@ class Validator
         $this->instanceRules[$name] = $callback;
         $this->instanceRuleMessage[$name] = $message;
     }
-
 
     public static function addRule($name, $callback, $message = null)
     {
@@ -873,7 +832,6 @@ class Validator
         static::$rules[$name] = $callback;
         static::$ruleMessages[$name] = $message;
     }
-
 
     public function getUniqueRuleName($fields)
     {
@@ -892,14 +850,12 @@ class Validator
         return $name;
     }
 
-
     public function hasValidator($name)
     {
         $rules = $this->getRules();
 
         return method_exists($this, 'validate' . ucfirst($name)) || isset($rules[$name]);
     }
-
 
     public function rule($rule, $fields)
     {
@@ -947,7 +903,6 @@ class Validator
         return $this;
     }
 
-
     public function label($value)
     {
         $lastRules = $this->validations[count($this->validations) - 1]['fields'];
@@ -956,13 +911,11 @@ class Validator
         return $this;
     }
 
-
     public function labels($labels = [])
     {
         $this->labels = array_merge($this->labels, $labels);
         return $this;
     }
-
 
     protected function checkAndSetLabel($field, $message, $params)
     {
@@ -993,7 +946,6 @@ class Validator
         return $message;
     }
 
-
     public function rules($rules)
     {
         foreach ($rules as $ruleType => $params) {
@@ -1012,7 +964,6 @@ class Validator
         }
     }
 
-
     public function withData($data, $fields = [])
     {
         $clone = clone $this;
@@ -1022,7 +973,6 @@ class Validator
 
         return $clone;
     }
-
 
     public function mapFieldRules($field, $rules)
     {
@@ -1045,7 +995,6 @@ class Validator
             }
         }, (array) $rules);
     }
-
 
     public function mapFieldsRules($rules)
     {
