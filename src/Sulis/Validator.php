@@ -25,7 +25,7 @@ class Validator
     protected bool $bail = false;
     protected bool $prependLabels = true;
 
-    public function __construct($data = [], $fields = [], $lang = null, $langDir = null)
+    public function __construct(array $data = [], array $fields = [], ?string $lang = null, ?string $langDir = null)
     {
         $this->fields = empty($fields) ? $data : array_intersect_key($data, array_flip($fields));
         $lang = $lang ?: static::lang();
@@ -40,13 +40,13 @@ class Validator
         }
     }
 
-    public function make($data = [], $fields = [], $lang = null, $langDir = null)
+    public function make(array $data = [], array $fields = [], ?string $lang = null, ?string $langDir = null): self
     {
         $this->__construct($data, $fields, $lang, $langDir);
         return $this;
     }
 
-    public static function lang($lang = null)
+    public static function lang(?string $lang = null): string
     {
         if ($lang !== null) {
             static::$lang = $lang;
@@ -55,7 +55,7 @@ class Validator
         return static::$lang ?: 'en';
     }
 
-    public static function langDir($dir = null)
+    public static function langDir(?string $dir = null): string
     {
         if ($dir !== null) {
             static::$langDir = $dir;
@@ -64,7 +64,7 @@ class Validator
         return static::$langDir ?: dirname(__DIR__) . '/lang/validator';
     }
 
-    public function setPrependLabels($prependLabels = true)
+    public function setPrependLabels(bool $prependLabels = true): void
     {
         $this->prependLabels = $prependLabels;
     }
