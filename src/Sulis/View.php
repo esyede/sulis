@@ -41,9 +41,9 @@ class View
             try {
                 mkdir($this->cacheFolder, 0755, true);
             } catch (Throwable $e) {
-                throw new Exception('Unable to create view cache folder: '.$this->cacheFolder);
+                throw new Exception('Unable to create view cache folder: ' . $this->cacheFolder);
             } catch (Exception $e) {
-                throw new Exception('Unable to create view cache folder: '.$this->cacheFolder);
+                throw new Exception('Unable to create view cache folder: ' . $this->cacheFolder);
             }
         }
     }
