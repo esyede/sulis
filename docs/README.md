@@ -23,6 +23,7 @@ Sulis dirilis di bawah lisensi [MIT](https://github.com/esyede/sulis/blob/main/L
 # Installation
 
 **1. Unduh file**
+
 Jika anda menggunakan [Composer](https://getcomposer.org/), anda dapat menjalankan perintah berikut:
 ```bash
 composer require esyede/sulis
@@ -73,20 +74,20 @@ Sulis::route('/', function () {
 });
 ```
 
-Terakhir, hidupkan framework.
+Terakhir, jalankan.
 ```php
 Sulis::start();
 ```
 
 # Routing
-Perutean di Sulis dilakukan dengan mencocokkan pola URL dengan fungsi callback.
+Routing di sulis dilakukan dengan mencocokkan pola URL dengan fungsi callback.
 ```php
 Sulis::route('/', function () {
     echo 'hello world!';
 });
 ```
 
-Callback dapat berupa objek apa pun yang sifatnya callable. Jadi, anda juga dapat menggunakan fungsi reguler:
+Callback dapat berupa objek apa pun yang sifatnya `callable`. Jadi, anda juga dapat menggunakan fungsi reguler:
 ```php
 function hello () {
     echo 'hello world!';
@@ -175,8 +176,7 @@ Sulis::route('/@name/@id:[0-9]{3}', function ($name, $id) {
     // Tetapi tidak akan cocok dengan /bob/12345
 });
 ```
-
-  > Pencocokan grup regex `()` dengan named parameter tidak didukung.
+  > [!NOTE] Pencocokan grup regex `()` dengan named parameter tidak didukung.
 
 ## Optional Parameters
 Anda dapat menentukan named parameter opsional untuk pencocokan dengan membungkus segmen dalam tanda kurung.
@@ -228,7 +228,7 @@ Sulis::route('/user/*', function () {
 ## Route Info
 Jika Anda ingin memeriksa informasi rute, anda dapat mengambilnya dari object rute
 yang akan dioper ke callback anda dengan mereturn `true` sebagai parameter ketiga di
-method `route`. Objek route akan selalu menjadi parameter terakhir yang dioper ke fungsi callback anda.
+method `route()`. Objek route akan selalu menjadi parameter terakhir yang dioper ke fungsi callback anda.
 
 ```php
 Sulis::route('/', function ($route) {
@@ -252,7 +252,7 @@ method dan komponen default, tetapi anda juga boleh memetakan komponen baru ,
 maupun menimpa kelas dan method yang ada.
 
 ## Mapping Methods
-Untuk memetakan method kustom anda sendiri, gunakan method `map`:
+Untuk memetakan method kustom anda sendiri, gunakan method `map()`:
 ```php
 // Cara mapping
 Sulis::map('hello', function ($name) {
@@ -264,7 +264,7 @@ Sulis::hello('Bob');
 ```
 
 ## Registering Classes
-Untuk mendaftarkan kelas anda sendiri, gunakan method `register`:
+Untuk mendaftarkan kelas anda sendiri, gunakan method `register()`:
 ```php
 // Cara pendaftaran
 Sulis::register('user', User::class);
@@ -273,7 +273,7 @@ Sulis::register('user', User::class);
 $user = Sulis::user();
 ```
 
-Method `register` juga memungkinkan anda mengoper parameter ke konstruktor kelas anda.
+Method `register()` juga memungkinkan anda mengoper parameter ke konstruktor kelas anda.
 Jadi ketika anda memuat kelas kustom anda, kelas itu akan dipra-inisialisasi.
 Anda dapat menentukan parameter konstruktor dengan mengoper array tambahan.
 Berikut ini contoh memuat koneksi database:
@@ -315,8 +315,8 @@ mendeklarasikan keduanya menggunakan nama yang sama, hanya method yang dipetakan
 # Overriding
 Anda juga dapat mengganti fungsionalitas default sulis dengan kebutuhan anda sendiri, tanpa harus mengubah kode apapun.
 
-Misalnya, ketika sulis tidak dapat mencocokkan URL dengan rute, sulis memanggil method `notFound`
-yang mengirimkan respon generik `HTTP 404`. Anda dapat mengganti perilaku ini dengan menggunakan method `map`:
+Misalnya, ketika sulis tidak dapat mencocokkan URL dengan rute, sulis memanggil method `notFound()`
+yang mengirimkan respon generik `HTTP 404`. Anda dapat mengganti perilaku ini dengan menggunakan method `map()`:
 ```php
 Sulis::map('notFound', function () {
     // Tampilkan halaman 404 kustom
@@ -333,8 +333,7 @@ Sulis::register('router', MyRouter::class);
 // Ketika sulis memuat instance Router, kelas kustom anda yang akan dimuat
 $myrouter = Sulis::router();
 ```
-
-  > Metode inti seperti `map` dan `register` tidak dapat diganti.
+  > [!NOTE] Metode inti seperti `map()` dan `register()` tidak dapat diganti.
 
 # Filtering
 Sulis memungkinkan anda untuk memfilter method sebelum dan sesudah dieksekusi.
@@ -343,7 +342,7 @@ Anda dapat memfilter method default bawaan framework maupun method kustom yang t
 Fungsi filter terlihat seperti ini:
 ```php
 function (&$params, &$output) {
-    // Kode filter
+    // Kode filter anda disini
 }
 ```
 
@@ -370,7 +369,7 @@ Mereka akan dieksekusi sesuai urutan yang anda tentukan.
 Berikut adalah contoh proses filtering:
 
 ```php
-// Petakan metode custom
+// Petakan method kustom
 Sulis::map('hello', function ($name) {
     return "Hello, $name!";
 });
@@ -387,7 +386,7 @@ Sulis::after('hello', function (&$params, &$output) {
     $output .= " Have a nice day!";
 });
 
-// Panggil metode kustomya
+// Panggil method kustomya
 echo Sulis::hello('Bob');
 ```
 
@@ -416,312 +415,142 @@ Sulis::before('start', function (&$params, &$output) {
     echo 'three';
 });
 ```
-
-Note, core methods such as `map` and `register` cannot be filtered because they
-are called directly and not invoked dynamically.
+  > [!NOTE] Method inti seperti `map()` dan `register()` tidak bisa difilter.
 
 # Variables
-
-Sulis allows you to save variables so that they can be used anywhere in your application.
-
+Sulis memungkinkan anda untuk menyimpan variabel secara global sehingga dapat digunakan di mana saja di aplikasi anda.
 ```php
-// Save your variable
+// Contoh menyimpan variabel
 Sulis::set('id', 123);
 
-// Elsewhere in your application
+// Contoh mengakses variabel
 $id = Sulis::get('id');
 ```
-To see if a variable has been set you can do:
-
+Untuk memeriksa apakah variabel ada atau tidak, gunakan `has()`:
 ```php
 if (Sulis::has('id')) {
-     // Do something
+     // Variabel 'id' ada!
 }
 ```
 
-You can clear a variable by doing:
-
+Untuk menghapusnya, gunakan method `clear()`:
 ```php
-// Clears the id variable
+// Hapus variabel 'id'
 Sulis::clear('id');
 
-// Clears all variables
+// Hapus seluruh variabel
 Sulis::clear();
 ```
-
-Sulis also uses variables for configuration purposes.
+  > [!TIP] Sulis juga menggunakan variabel untuk keperluan konfigurasi framework.
 
 ```php
 Sulis::set('sulis.log_errors', true);
 ```
 
-# Views
+## Errors & Exceptions
+Semua error dan exception ditangkap oleh sulis dan dioper ke method `error`.
+Perilaku defaultnya adalah mengirim respon `HTTP 500 Internal Server Error` generik
+dengan beberapa informasi kesalahan tambahan.
 
-Sulis provides some basic templating functionality by default. To display a view
-template call the `render` method with the name of the template file and optional
-template data:
-
+Anda dapat mengganti perilaku ini untuk kebutuhan anda:
 ```php
-Sulis::render('hello.php', array('name' => 'Bob'));
-```
-
-The template data you pass in is automatically injected into the template and can
-be reference like a local variable. Template files are simply PHP files. If the
-content of the `hello.php` template file is:
-
-```php
-Hello, '<?php echo $name; ?>'!
-```
-
-The output would be:
-
-    Hello, Bob!
-
-You can also manually set view variables by using the set method:
-
-```php
-Sulis::view()->set('name', 'Bob');
-```
-
-The variable `name` is now available across all your views. So you can simply do:
-
-```php
-Sulis::render('hello');
-```
-
-Note that when specifying the name of the template in the render method, you can
-leave out the `.php` extension.
-
-By default Sulis will look for a `views` directory for template files. You can
-set an alternate path for your templates by setting the following config:
-
-```php
-Sulis::set('sulis.views.path', '/path/to/views');
-```
-
-## Layouts
-
-It is common for websites to have a single layout template file with interchanging
-content. To render content to be used in a layout, you can pass in an optional
-parameter to the `render` method.
-
-```php
-Sulis::render('header', array('heading' => 'Hello'), 'header_content');
-Sulis::render('body', array('body' => 'World'), 'body_content');
-```
-
-Your view will then have saved variables called `header_content` and `body_content`.
-You can then render your layout by doing:
-
-```php
-Sulis::render('layout', array('title' => 'Home Page'));
-```
-
-If the template files looks like this:
-
-`header.php`:
-
-```php
-<h1><?php echo $heading; ?></h1>
-```
-
-`body.php`:
-
-```php
-<div><?php echo $body; ?></div>
-```
-
-`layout.php`:
-
-```php
-<html>
-<head>
-<title><?php echo $title; ?></title>
-</head>
-<body>
-<?php echo $header_content; ?>
-<?php echo $body_content; ?>
-</body>
-</html>
-```
-
-The output would be:
-```html
-<html>
-<head>
-<title>Home Page</title>
-</head>
-<body>
-<h1>Hello</h1>
-<div>World</div>
-</body>
-</html>
-```
-
-## Custom Views
-
-Sulis allows you to swap out the default view engine simply by registering your
-own view class. Here's how you would use the [Smarty](http://www.smarty.net/)
-template engine for your views:
-
-```php
-// Load Smarty library
-require './Smarty/libs/Smarty.class.php';
-
-// Register Smarty as the view class
-// Also pass a callback function to configure Smarty on load
-Sulis::register('view', 'Smarty', array(), function ($smarty) {
-    $smarty->template_dir = './templates/';
-    $smarty->compile_dir = './templates_c/';
-    $smarty->config_dir = './config/';
-    $smarty->cache_dir = './cache/';
-});
-
-// Assign template data
-Sulis::view()->assign('name', 'Bob');
-
-// Display the template
-Sulis::view()->display('hello.tpl');
-```
-
-For completeness, you should also override Sulis's default render method:
-
-```php
-Sulis::map('render', function ($template, $data) {
-    Sulis::view()->assign($data);
-    Sulis::view()->display($template);
-});
-```
-# Error Handling
-
-## Errors and Exceptions
-
-All errors and exceptions are caught by Sulis and passed to the `error` method.
-The default behavior is to send a generic `HTTP 500 Internal Server Error`
-response with some error information.
-
-You can override this behavior for your own needs:
-
-```php
-Sulis::map('error', function (Exception $ex) {
-    // Handle error
-    echo $ex->getTraceAsString();
+Sulis::map('error', function (Throwable $e) {
+    // Tangani error
+    echo $e->getTraceAsString();
 });
 ```
 
-By default errors are not logged to the web server. You can enable this by
-changing the config:
+Secara default, error tidak di-log ke webserver. Anda dapat mengaktifkan ini dengan mengubah konfigurasi:
 
 ```php
 Sulis::set('sulis.log_errors', true);
 ```
 
 ## Not Found
+Ketika URL tidak ditemukan, sulis akan memanggil method `notFound()`.
+Perilaku defaultnya adalah mengirim respon `HTTP 404 Not Found` dengan pesan sederhana.
 
-When a URL can't be found, Sulis calls the `notFound` method. The default
-behavior is to send an `HTTP 404 Not Found` response with a simple message.
-
-You can override this behavior for your own needs:
-
+Anda juga dapat mengganti perilaku ini untuk kebutuhan anda:
 ```php
 Sulis::map('notFound', function () {
-    // Handle not found
+    // Tangani not found
 });
 ```
 
-# Redirects
-
-You can redirect the current request by using the `redirect` method and passing
-in a new URL:
-
+# Redirect
+Anda dapat me-redirect request saat ini dengan menggunakan method `redirect()`:
 ```php
 Sulis::redirect('/new/location');
 ```
 
-By default Sulis sends a HTTP 303 status code. You can optionally set a
-custom code:
-
+Secara default, sulis mengirimkan kode status `HTTP 303`. Anda dapat mengubahnya jika diperlukan:
 ```php
 Sulis::redirect('/new/location', 401);
 ```
 
-# Requests
-
-Sulis encapsulates the HTTP request into a single object, which can be
-accessed by doing:
-
+# Request
+Sulis membungkus HTTP request menjadi satu objek, yang dapat diakses dengan memanggil:
 ```php
 $request = Sulis::request();
 ```
 
-The request object provides the following properties:
-
+Objek tersebut berisi properti:
 ```
-url - The URL being requested
-base - The parent subdirectory of the URL
-method - The request method (GET, POST, PUT, DELETE)
-referrer - The referrer URL
-ip - IP address of the client
-ajax - Whether the request is an AJAX request
-scheme - The server protocol (http, https)
-user_agent - Browser information
-type - The content type
-length - The content length
-query - Query string parameters
-data - Post data or JSON data
+url - URL saat ini
+base - Subdirektori induk URL
+method - Request method (GET, POST, PUT, DELETE)
+referrer - Referrer URL
+ip - IP klien
+ajax - Indikator apakah request tersebut merupakan request AJAX
+scheme - Protokol request (http, https)
+user_agent - User agent
+type - Content type
+length - Content length
+query - Query string
+data - Post data atau JSON data
 cookies - Cookie data
-files - Uploaded files
-secure - Whether the connection is secure
-accept - HTTP accept parameters
-proxy_ip - Proxy IP address of the client
-host - The request host name
+files - File upload
+secure - Indikator secure connection (https)
+accept - HTTP Accept
+proxy_ip - Proxy IP klien
+host - Hostname
 ```
 
-You can access the `query`, `data`, `cookies`, and `files` properties
-as arrays or objects.
+Anda dapat mengakses properti `query`, `data`, `cookies`, dan `files` sebagai array atau objek.
 
-So, to get a query string parameter, you can do:
-
+Jadi, untuk mengambil parameter query string, anda dapat melakukan:
 ```php
 $id = Sulis::request()->query['id'];
 ```
 
-Or you can do:
-
+Atau:
 ```php
 $id = Sulis::request()->query->id;
 ```
 
 ## RAW Request Body
-
-To get the raw HTTP request body, for example when dealing with PUT requests, you can do:
-
+Untuk mengambil raw request body, misalnya saat menangani request PUT, anda dapat melakukan:
 ```php
 $body = Sulis::request()->getBody();
 ```
 
 ## JSON Input
-
-If you send a request with the type `application/json` and the data `{"id": 123}` it will be available
-from the `data` property:
-
+Jika anda mengirim request bertipe `application/json` dengan data `{"id": 123}`,
+request tersebut akan tersedia di properti `data`:
 ```php
 $id = Sulis::request()->data->id;
 ```
 
 # HTTP Caching
-
 Sulis provides built-in support for HTTP level caching. If the caching condition
 is met, Sulis will return an HTTP `304 Not Modified` response. The next time the
 client requests the same resource, they will be prompted to use their locally
 cached version.
 
 ## Last-Modified
-
 You can use the `lastModified` method and pass in a UNIX timestamp to set the date
 and time a page was last modified. The client will continue to use their cache until
 the last modified value is changed.
-
 ```php
 Sulis::route('/news', function () {
     Sulis::lastModified(1234567890);
@@ -730,10 +559,8 @@ Sulis::route('/news', function () {
 ```
 
 ## ETag
-
 `ETag` caching is similar to `Last-Modified`, except you can specify any id you
 want for the resource:
-
 ```php
 Sulis::route('/news', function () {
     Sulis::etag('my-unique-id');
@@ -746,44 +573,36 @@ cache value. If the cache value is the same between requests, Sulis will immedia
 send an `HTTP 304` response and stop processing.
 
 # Stopping
-
 You can stop the framework at any point by calling the `halt` method:
-
 ```php
 Sulis::halt();
 ```
 
 You can also specify an optional `HTTP` status code and message:
-
 ```php
 Sulis::halt(200, 'Be right back...');
 ```
 
 Calling `halt` will discard any response content up to that point. If you want to stop
 the framework and output the current response, use the `stop` method:
-
 ```php
 Sulis::stop();
 ```
 
 # JSON
-
 Sulis provides support for sending JSON and JSONP responses. To send a JSON response you
 pass some data to be JSON encoded:
-
 ```php
 Sulis::json(array('id' => 123));
 ```
 
 For JSONP requests you, can optionally pass in the query parameter name you are
 using to define your callback function:
-
 ```php
 Sulis::jsonp(array('id' => 123), 'q');
 ```
 
 So, when making a GET request using `?q=my_func`, you should receive the output:
-
 ```
 my_func({"id":123});
 ```
@@ -792,32 +611,29 @@ If you don't pass in a query parameter name it will default to `jsonp`.
 
 
 # Configuration
-
 You can customize certain behaviors of Sulis by setting configuration values
 through the `set` method.
-
 ```php
 Sulis::set('sulis.log_errors', true);
 ```
 
 The following is a list of all the available configuration settings:
+```
+sulis.base_url - Override the base url of the request. (default: null)
+sulis.case_sensitive - Case sensitive matching for URLs. (default: false)
+sulis.handle_errors - Allow Sulis to handle all errors internally. (default: true)
+sulis.log_errors - Log errors to the web server's error log file. (default: false)
+sulis.views.path - Directory containing view template files. (default: ./views)
+sulis.views.cache - View template cache directory. (default: ./cache)
+```
 
-    sulis.base_url - Override the base url of the request. (default: null)
-    sulis.case_sensitive - Case sensitive matching for URLs. (default: false)
-    sulis.handle_errors - Allow Sulis to handle all errors internally. (default: true)
-    sulis.log_errors - Log errors to the web server's error log file. (default: false)
-    sulis.views.path - Directory containing view template files. (default: ./views)
-    sulis.views.cache - View template cache directory. (default: ./cache)
-
-# Framework Methods
-
+# Framework Method
 Sulis is designed to be easy to use and understand. The following is the complete
 set of methods for the framework. It consists of core methods, which are regular
 static methods, and extensible methods, which are mapped methods that can be filtered
 or overridden.
 
-## Core Methods
-
+## Core Method
 ```php
 Sulis::map($name, $callback) // Creates a custom framework method.
 Sulis::register($name, $class, [$params], [$callback]) // Registers a class to a framework method.
@@ -832,8 +648,7 @@ Sulis::init() // Initializes the framework to its default settings.
 Sulis::app() // Gets the application object instance
 ```
 
-## Extensible Methods
-
+## Extensible Method
 ```php
 Sulis::start() // Starts the framework.
 Sulis::stop() // Stops the framework and sends a response.
@@ -853,10 +668,8 @@ Any custom methods added with `map` and `register` can also be filtered.
 
 
 # Framework Instance
-
 Instead of running Sulis as a global static class, you can optionally run it
 as an object instance.
-
 ```php
 require 'src/Sulis/autoload.php';
 
