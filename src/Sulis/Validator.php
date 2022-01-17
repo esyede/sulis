@@ -16,8 +16,8 @@ class Validator
     protected array $instanceRules = [];
     protected array $instanceRuleMessage = [];
 
-    protected static string $lang;
-    protected static string $langDir;
+    protected static string $lang = 'en';
+    protected static ?string $langDir;
     protected static array $rules = [];
     protected static array $ruleMessages = [];
 
@@ -54,7 +54,7 @@ class Validator
 
     public static function langDir(?string $dir = null): string
     {
-        static::$langDir = ($lang !== null) ? $dir : static::$langDir;
+        static::$langDir = (static::$lang !== null) ? $dir : static::$langDir;
         return static::$langDir ?: dirname(__DIR__) . '/lang/validator';
     }
 
@@ -102,7 +102,7 @@ class Validator
     {
         return (isset($params[0]) && (bool) $params[0])
             ? preg_match('/^([0-9]|-[1-9]|-?[1-9][0-9]*)$/i', $value)
-            : filter_var($value, FILTER_VALIDATE_INT) !== false;
+            : (filter_var($value, FILTER_VALIDATE_INT) !== false);
     }
 
     protected function validateLength($field, $value, $params)
@@ -138,24 +138,16 @@ class Validator
 
     protected function validateMin($field, $value, $params)
     {
-        if (! is_numeric($value)) {
-            return false;
-        } elseif (function_exists('bccomp')) {
-            return ! (bccomp($params[0], $value, 14) === 1);
-        } else {
-            return $params[0] <= $value;
-        }
+        return is_numeric($value)
+            ? (function_exists('bccomp') ? (bccomp($params[0], $value, 14) !== 1) : ($params[0] <= $value))
+            : false;
     }
 
     protected function validateMax($field, $value, $params)
     {
-        if (! is_numeric($value)) {
-            return false;
-        } elseif (function_exists('bccomp')) {
-            return ! (bccomp($value, $params[0], 14) === 1);
-        } else {
-            return $params[0] >= $value;
-        }
+        return is_numeric($value)
+            ? (function_exists('bccomp') ? (bccomp($value, $params[0], 14) !== 1) : ($params[0] >= $value))
+            : false;
     }
 
     protected function validateBetween($field, $value, $params)
@@ -171,18 +163,22 @@ class Validator
     protected function validateIn($field, $value, $params)
     {
         $forceAsAssociative = isset($params[2]) ? (bool) $params[2] : false;
-        $params[0] = ($forceAsAssociative || $this->isAssociativeArray($params[0])) ? array_keys($params[0]) : $params[0];
-        $strict = isset($params[1]) ? $params[1] : false;
+        $params[0] = ($forceAsAssociative || $this->isAssociativeArray($params[0]))
+            ? array_keys($params[0])
+            : $params[0];
 
+        $strict = isset($params[1]) ? $params[1] : false;
         return in_array($value, $params[0], $strict);
     }
 
     protected function validateListContains($field, $value, $params)
     {
         $forceAsAssociative = isset($params[2]) ? (bool) $params[2] : false;
-        $value = ($forceAsAssociative || $this->isAssociativeArray($value)) ? array_keys($value) : $value;
-        $strict = isset($params[1]) ? $params[1] : false;
+        $value = ($forceAsAssociative || $this->isAssociativeArray($value))
+            ? array_keys($value)
+            : $value;
 
+        $strict = isset($params[1]) ? $params[1] : false;
         return in_array($params[0], $value, $strict);
     }
 
@@ -402,7 +398,8 @@ class Validator
                         : (preg_match($cardRegex[$cardType], $value) === 1);
                 } elseif (isset($cards)) {
                     foreach ($cards as $card) {
-                        if (in_array($card, array_keys($cardRegex)) && preg_match($cardRegex[$card], $value) === 1) {
+                        if (in_array($card, array_keys($cardRegex))
+                        && preg_match($cardRegex[$card], $value) === 1) {
                             return true;
                         }
                     }
@@ -428,9 +425,9 @@ class Validator
                 || get_class($value) === $params[0]);
         }
 
-        if (is_string($value)) {
-            $isInstanceOf = (is_string($params[0]) && get_class($value) === $params[0]);
-        }
+        $isInstanceOf = is_string($value)
+            ? (is_string($params[0]) && get_class($value) === $params[0])
+            : $isInstanceOf;
 
         return $isInstanceOf;
     }
@@ -441,7 +438,7 @@ class Validator
 
         if (isset($params[0])) {
             $reqParams = is_array($params[0]) ? $params[0] : [$params[0]];
-            $allRequired = isset($params[1]) && (bool)$params[1];
+            $allRequired = isset($params[1]) && (bool) $params[1];
             $emptyFields = 0;
 
             foreach ($reqParams as $requiredField) {
@@ -617,7 +614,8 @@ class Validator
             return false;
         }
 
-        if (! $this->hasRule('required', $field) && ! in_array($validation['rule'], ['required', 'accepted'])) {
+        if (! $this->hasRule('required', $field)
+        && ! in_array($validation['rule'], ['required', 'accepted'])) {
             return $multiple ? (count($values) !== 0) : (isset($values) && $values !== '');
         }
 
@@ -726,10 +724,7 @@ class Validator
 
     public function getUniqueRuleName($fields)
     {
-        if (is_array($fields)) {
-            $fields = implode(' ', $fields);
-        }
-
+        $fields = is_array($fields) ? implode(' ', $fields) : $fields;
         $orgName = $fields . '_rule';
         $name = $orgName;
         $rules = $this->getRules();
@@ -785,7 +780,7 @@ class Validator
         return $this;
     }
 
-    public function label($value)
+    public function label(string $value): self
     {
         $lastRules = $this->validations[count($this->validations) - 1]['fields'];
         $this->labels([$lastRules[0] => $value]);
@@ -793,7 +788,7 @@ class Validator
         return $this;
     }
 
-    public function labels($labels = [])
+    public function labels(array $labels = []): self
     {
         $this->labels = array_merge($this->labels, $labels);
         return $this;

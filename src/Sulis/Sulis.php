@@ -12,6 +12,7 @@ use Sulis\View;
 class Sulis
 {
     private static Engine $engine;
+    private static bool $initialized = false;
 
     private function __construct()
     {
@@ -28,7 +29,6 @@ class Sulis
         //
     }
 
-    
     public static function __callStatic(string $name, array $params)
     {
         $app = self::app();
@@ -37,12 +37,10 @@ class Sulis
 
     public static function app(): Engine
     {
-        static $initialized = false;
-
-        if (! $initialized) {
+        if (! static::$initialized) {
             require_once __DIR__ . '/autoload.php';
             self::$engine = new Engine();
-            $initialized = true;
+            static::$initialized = true;
         }
 
         return self::$engine;

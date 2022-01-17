@@ -19,13 +19,15 @@ use Throwable;
 
 class Engine
 {
-    protected array $vars;
+    protected array $variables;
     protected Loader $loader;
     protected Dispatcher $dispatcher;
 
+    private static $initialized = false;
+
     public function __construct()
     {
-        $this->vars = [];
+        $this->variables = [];
         $this->loader = new Loader();
         $this->dispatcher = new Dispatcher();
         $this->init();
@@ -50,12 +52,10 @@ class Engine
 
     public function init(): void
     {
-        static $initialized = false;
-
         $self = $this;
 
-        if ($initialized) {
-            $this->vars = [];
+        if (self::$initialized) {
+            $this->variables = [];
             $this->loader->reset();
             $this->dispatcher->reset();
         }
@@ -77,8 +77,7 @@ class Engine
             'render', 'redirect',
             'etag', 'lastModified',
             'json', 'jsonp',
-            'post',
-            'put', 'patch', 'delete',
+            'post', 'put', 'patch', 'delete',
         ];
 
         foreach ($methods as $name) {
@@ -103,7 +102,7 @@ class Engine
             $self->response()->content_length = $self->get('sulis.content_length');
         });
 
-        $initialized = true;
+        self::$initialized = true;
     }
 
     public function handleError(int $number, string $message, string $file, int $line)
@@ -153,34 +152,34 @@ class Engine
     public function get(?string $key = null)
     {
         if (null === $key) {
-            return $this->vars;
+            return $this->variables;
         }
 
-        return $this->vars[$key] ?? null;
+        return $this->variables[$key] ?? null;
     }
 
     public function set($key, $value = null): void
     {
         if (is_array($key) || is_object($key)) {
             foreach ($key as $k => $v) {
-                $this->vars[$k] = $v;
+                $this->variables[$k] = $v;
             }
         } else {
-            $this->vars[$key] = $value;
+            $this->variables[$key] = $value;
         }
     }
 
     public function has(string $key): bool
     {
-        return isset($this->vars[$key]);
+        return isset($this->variables[$key]);
     }
 
     public function clear(?string $key = null): void
     {
         if (null === $key) {
-            $this->vars = [];
+            $this->variables = [];
         } else {
-            unset($this->vars[$key]);
+            unset($this->variables[$key]);
         }
     }
 
@@ -298,7 +297,7 @@ class Engine
             ->status($code)
             ->write($message)
             ->send();
-        exit();
+        exit;
     }
 
     public function _notFound(): void

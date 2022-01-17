@@ -15,6 +15,7 @@ final class Request
     public string $ip;
     public bool $ajax;
     public string $scheme;
+    public string $body;
     public string $user_agent;
     public string $type;
     public int $length;
@@ -36,7 +37,7 @@ final class Request
                 'method' => self::getMethod(),
                 'referrer' => self::getVar('HTTP_REFERER'),
                 'ip' => self::getVar('REMOTE_ADDR'),
-                'ajax' => 'XMLHttpRequest' === self::getVar('HTTP_X_REQUESTED_WITH'),
+                'ajax' => 'xmlhttprequest' === strtolower((string) self::getVar('HTTP_X_REQUESTED_WITH')),
                 'scheme' => self::getScheme(),
                 'user_agent' => self::getVar('HTTP_USER_AGENT'),
                 'type' => self::getVar('CONTENT_TYPE'),
@@ -87,19 +88,17 @@ final class Request
 
     public static function getBody(): ?string
     {
-        static $body;
-
-        if (null !== $body) {
-            return $body;
+        if (null !== static::$body) {
+            return static::$body;
         }
 
         $method = self::getMethod();
 
         if ('POST' === $method || 'PUT' === $method || 'DELETE' === $method || 'PATCH' === $method) {
-            $body = file_get_contents('php://input');
+            static::$body = file_get_contents('php://input');
         }
 
-        return $body;
+        return static::$body;
     }
 
     public static function getMethod(): string
@@ -138,7 +137,7 @@ final class Request
             }
         }
 
-        return "";
+        return '';
     }
 
     public static function getVar(string $var, $default = '')

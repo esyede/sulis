@@ -21,7 +21,7 @@ class Router
         $this->routes = [];
     }
 
-    public function map(string $pattern, callable $callback, bool $pass_route = false): void
+    public function map(string $pattern, callable $callback, bool $passRoute = false): void
     {
         $url = trim($pattern);
         $methods = ['*'];
@@ -32,17 +32,17 @@ class Router
             $methods = explode('|', $method);
         }
 
-        $this->routes[] = new Route($url, $callback, $methods, $pass_route);
+        $this->routes[] = new Route($url, $callback, $methods, $passRoute);
     }
 
     public function route(Request $request)
     {
-        $url_decoded = urldecode($request->url);
+        $urlDecoded = urldecode($request->url);
 
         while ($route = $this->current()) {
             if (false !== $route
             && $route->matchMethod($request->method)
-            && $route->matchUrl($url_decoded, $this->case_sensitive)) {
+            && $route->matchUrl($urlDecoded, $this->case_sensitive)) {
                 return $route;
             }
 

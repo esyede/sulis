@@ -47,8 +47,7 @@ class Dispatcher
     final public function clear(?string $name = null): void
     {
         if (null !== $name) {
-            unset($this->events[$name]);
-            unset($this->filters[$name]);
+            unset($this->events[$name], $this->filters[$name]);
         } else {
             $this->events = [];
             $this->filters = [];

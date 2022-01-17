@@ -139,7 +139,7 @@ class Response
             $this->headers['Expires'] = gmdate('D, d M Y H:i:s', $expires) . ' GMT';
             $this->headers['Cache-Control'] = 'max-age=' . ($expires - time());
 
-            if (isset($this->headers['Pragma']) && 'no-cache' === strtolower($this->headers['Pragma'])) {
+            if (isset($this->headers['Pragma']) && 'no-cache' === strtolower((string) $this->headers['Pragma'])) {
                 unset($this->headers['Pragma']);
             }
         }
@@ -150,21 +150,10 @@ class Response
     public function sendHeaders(): self
     {
         if (false !== strpos(PHP_SAPI, 'cgi')) {
-            header(
-                sprintf(
-                    'Status: %d %s',
-                    $this->status,
-                    self::$codes[$this->status]
-                ),
-                true
-            );
+            header(sprintf('Status: %d %s', $this->status, self::$codes[$this->status]), true);
         } else {
-            header(sprintf(
-                '%s %d %s',
-                $_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1',
-                $this->status,
-                self::$codes[$this->status]
-            ), true, $this->status);
+            $protocol = $_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1';
+            header(sprintf('%s %d %s', $protocol, $this->status, self::$codes[$this->status]), true, $this->status);
         }
 
         foreach ($this->headers as $field => $value) {

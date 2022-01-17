@@ -32,16 +32,16 @@ final class Route
         $last_char = substr($this->pattern, -1);
 
         if ('*' === $last_char) {
-            $n = 0;
-            $len = strlen($url);
+            $iteration = 0;
+            $length = strlen($url);
             $count = substr_count($this->pattern, '/');
 
-            for ($i = 0; $i < $len; $i++) {
+            for ($i = 0; $i < $length; $i++) {
                 if ('/' === $url[$i]) {
-                    $n++;
+                    $iteration++;
                 }
 
-                if ($n === $count) {
+                if ($iteration === $count) {
                     break;
                 }
             }
