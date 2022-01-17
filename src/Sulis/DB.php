@@ -7,51 +7,48 @@ use PDOException;
 
 class DB
 {
-    public $last_query;
-    public $num_rows;
-    public $insert_id;
-    public $affected_rows;
-    public $is_cached = false;
-    public $stats_enabled = false;
-    public $show_sql = false;
-    public $key_prefix = '';
+    public string $last_query;
+    public int $num_rows;
+    public int $insert_id;
+    public int $affected_rows;
+    public bool $is_cached = false;
+    public bool $stats_enabled = false;
+    public bool $show_sql = false;
+    public string $key_prefix = '';
 
-    protected $table;
-    protected $where;
-    protected $joins;
-    protected $order;
-    protected $groups;
-    protected $having;
-    protected $distinct;
-    protected $limit;
-    protected $offset;
-    protected $sql;
+    protected string $table;
+    protected string $where;
+    protected string $joins;
+    protected string $order;
+    protected string $groups;
+    protected string $having;
+    protected string $distinct;
+    protected int $limit;
+    protected int $offset;
+    protected string $sql;
 
     protected $db;
-    protected $db_type;
+    protected string $db_type;
     protected $cache;
-    protected $cache_type;
-    protected $stats;
-    protected $query_time;
-    protected $class;
+    protected string $cache_type;
+    protected array $stats;
+    protected float $query_time;
+    protected object $class;
 
-    protected static $db_types = ['pdo', 'mysqli', 'mysql', 'pgsql', 'sqlite', 'sqlite3'];
-    protected static $cache_types = ['memcached', 'memcache', 'xcache'];
+    protected static array $db_types = ['pdo', 'mysqli', 'mysql', 'pgsql', 'sqlite', 'sqlite3'];
+    protected static array $cache_types = ['memcached', 'memcache', 'xcache'];
 
     public function __construct()
     {
+        //
     }
 
-
-    
-
-
-    public function build($sql, $input)
+    public function build(string $sql, string $input): string
     {
-        return (strlen($input) > 0) ? ($sql.' '.$input) : $sql;
+        return (strlen($input) > 0) ? ($sql . ' ' . $input) : $sql;
     }
 
-    public function parseConnection($connection)
+    public function parseConnection(string $connection): array
     {
         $url = parse_url($connection);
 
@@ -71,7 +68,7 @@ class DB
         return $cfg;
     }
 
-    public function getStats()
+    public function getStats(): array
     {
         $this->stats['total_time'] = 0;
         $this->stats['num_queries'] = 0;
@@ -93,21 +90,21 @@ class DB
         return $this->stats;
     }
 
-    public function checkTable()
+    public function checkTable(): void
     {
         if (! $this->table) {
             throw new Exception('Table is not defined.');
         }
     }
 
-    public function checkClass()
+    public function checkClass(): void
     {
         if (! $this->class) {
             throw new Exception('Class is not defined.');
         }
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->where = '';
         $this->joins = '';
@@ -120,11 +117,7 @@ class DB
         $this->sql = '';
     }
 
-
-    
-
-
-    protected function parseCondition($field, $value = null, $join = '', $escape = true)
+    protected function parseCondition(string $field, ?string $value = null, string $join = '', bool $escape = true): string
     {
         if (is_string($field)) {
             if ($value === null) {
@@ -173,7 +166,7 @@ class DB
         }
     }
 
-    public function from($table, $reset = true)
+    public function from(string $table, bool $reset = true): self
     {
         $this->table = $table;
 
@@ -184,7 +177,7 @@ class DB
         return $this;
     }
 
-    public function join($table, array $fields, $type = 'INNER')
+    public function join(string $table, array $fields, string $type = 'INNER'): self
     {
         if (! in_array($type, ['INNER', 'LEFT OUTER', 'RIGHT OUTER', 'FULL OUTER'])) {
             throw new Exception('Invalid join type.');
@@ -194,40 +187,39 @@ class DB
         return $this;
     }
 
-    public function leftJoin($table, array $fields)
+    public function leftJoin(string $table, array $fields): string
     {
         return $this->join($table, $fields, 'LEFT OUTER');
     }
 
-    public function rightJoin($table, array $fields)
+    public function rightJoin(string $table, array $fields): string
     {
         return $this->join($table, $fields, 'RIGHT OUTER');
     }
 
-    public function fullJoin($table, array $fields)
+    public function fullJoin(string $table, array $fields): string
     {
         return $this->join($table, $fields, 'FULL OUTER');
     }
 
-    public function where($field, $value = null)
+    public function where(string $field, ?string $value = null): self
     {
-        $join = (empty($this->where)) ? 'WHERE' : '';
+        $join = empty($this->where) ? 'WHERE' : '';
         $this->where .= $this->parseCondition($field, $value, $join);
-
         return $this;
     }
 
-    public function sortAsc($field)
+    public function sortAsc(string $field): string
     {
         return $this->orderBy($field, 'ASC');
     }
 
-    public function sortDesc($field)
+    public function sortDesc(string $field): string
     {
         return $this->orderBy($field, 'DESC');
     }
 
-    public function orderBy($field, $direction = 'ASC')
+    public function orderBy(string $field, string $direction = 'ASC'): self
     {
         $join = (empty($this->order)) ? 'ORDER BY' : ',';
 
@@ -236,7 +228,7 @@ class DB
                 $field[$key] = $value . ' ' . $direction;
             }
         } else {
-            $field .= ' '.$direction;
+            $field .= ' ' . $direction;
         }
 
         $fields = (is_array($field)) ? implode(', ', $field) : $field;
@@ -245,25 +237,24 @@ class DB
         return $this;
     }
 
-    public function groupBy($field)
+    public function groupBy(string $field): self
     {
-        $join = (empty($this->order)) ? 'GROUP BY' : ',';
-        $fields = (is_array($field)) ? implode(',', $field) : $field;
+        $join = empty($this->order) ? 'GROUP BY' : ',';
+        $fields = is_array($field) ? implode(',', $field) : $field;
 
         $this->groups .= $join . ' ' . $fields;
-
         return $this;
     }
 
-    public function having($field, $value = null)
+    public function having(string $field, $value = null): self
     {
-        $join = (empty($this->having)) ? 'HAVING' : '';
+        $join = empty($this->having) ? 'HAVING' : '';
         $this->having .= $this->parseCondition($field, $value, $join);
 
         return $this;
     }
 
-    public function limit($limit, $offset = null)
+    public function limit(int $limit, ?int $offset = null): self
     {
         if ($limit !== null) {
             $this->limit = 'LIMIT '.$limit;
@@ -276,7 +267,7 @@ class DB
         return $this;
     }
 
-    public function offset($offset, $limit = null)
+    public function offset(int $offset, ?int $limit = null): self
     {
         if ($offset !== null) {
             $this->offset = 'OFFSET '.$offset;
@@ -289,18 +280,18 @@ class DB
         return $this;
     }
 
-    public function distinct($value = true)
+    public function distinct(bool $value = true): self
     {
         $this->distinct = ($value) ? 'DISTINCT' : '';
         return $this;
     }
 
-    public function between($field, $value1, $value2)
+    public function between(string $field, string $value1, string $value2): void
     {
         $this->where(sprintf('%s BETWEEN %s AND %s', $field, $this->quote($value1), $this->quote($value2)));
     }
 
-    public function select($fields = '*', $limit = null, $offset = null)
+    public function select(string $fields = '*', ?int $limit = null, ?int $offset = null): self
     {
         $this->checkTable();
 
@@ -325,7 +316,7 @@ class DB
         return $this;
     }
 
-    public function insert(array $data)
+    public function insert(array $data): self
     {
         $this->checkTable();
 
@@ -347,7 +338,7 @@ class DB
         return $this;
     }
 
-    public function update($data)
+    public function update(?array $data): self
     {
         $this->checkTable();
 
@@ -376,7 +367,7 @@ class DB
         return $this;
     }
 
-    public function delete($where = null)
+    public function delete(?string $where = null): self
     {
         $this->checkTable();
 
@@ -393,7 +384,7 @@ class DB
         return $this;
     }
 
-    public function sql($sql = null)
+    public function sql(?string $sql = null): self
     {
         if ($sql !== null) {
             $this->sql = trim(is_array($sql) ? array_reduce($sql, [$this, 'build']) : $sql);
@@ -403,11 +394,7 @@ class DB
         return $this->sql;
     }
 
-
-    
-
-
-    public function setDb($db)
+    public function setDb($db): void
     {
         $this->db = null;
 
@@ -511,22 +498,22 @@ class DB
         return $this->db;
     }
 
-    public function getDbType($db)
+    public function getDbType($db): string
     {
         if (is_object($db)) {
             return strtolower(get_class($db));
         } elseif (is_resource($db)) {
             switch (get_resource_type($db)) {
-                case 'mysql link': return 'mysql';
+                case 'mysql link':      return 'mysql';
                 case 'sqlite database': return 'sqlite';
-                case 'pgsql link': return 'pgsql';
+                case 'pgsql link':      return 'pgsql';
             }
         }
 
         return null;
     }
 
-    public function execute($key = null, $expire = 0)
+    public function execute(?string $key = null, int $expire = 0)
     {
         if (! $this->db) {
             throw new Exception('Database is not defined.');
@@ -599,7 +586,7 @@ class DB
                     if (! $result) {
                         $error = mysql_error();
                     } else {
-                        if (!is_bool($result)) {
+                        if (! is_bool($result)) {
                             $this->num_rows = mysql_num_rows($result);
                         } else {
                             $this->affected_rows = mysql_affected_rows($this->db);
@@ -666,7 +653,7 @@ class DB
         return $result;
     }
 
-    public function many($key = null, $expire = 0)
+    public function many(?string $key = null, int $expire = 0)
     {
         if (empty($this->sql)) {
             $this->select();
@@ -737,7 +724,7 @@ class DB
         return $data;
     }
 
-    public function one($key = null, $expire = 0)
+    public function one(?string $key = null, int $expire = 0)
     {
         if (empty($this->sql)) {
             $this->limit(1)->select();
@@ -749,7 +736,7 @@ class DB
         return $row;
     }
 
-    public function value($name, $key = null, $expire = 0)
+    public function value(string $name, ?string $key = null, int $expire = 0): string
     {
         $row = $this->one($key, $expire);
         $value = empty($row) ? null : $row[$name];
@@ -757,37 +744,37 @@ class DB
         return $value;
     }
 
-    public function min($field, $key = null, $expire = 0)
+    public function min(string $field, ?string $key = null, int $expire = 0): string
     {
         $this->select('MIN(' . $field . ') min_value');
         return $this->value('min_value', $key, $expire);
     }
 
-    public function max($field, $key = null, $expire = 0)
+    public function max(string $field, ?string $key = null, int $expire = 0): string
     {
         $this->select('MAX(' . $field . ') max_value');
         return $this->value('max_value', $key, $expire);
     }
 
-    public function sum($field, $key = null, $expire = 0)
+    public function sum(string $field, ?string $key = null, int $expire = 0): string
     {
         $this->select('SUM(' . $field . ') sum_value');
         return $this->value('sum_value', $key, $expire);
     }
 
-    public function avg($field, $key = null, $expire = 0)
+    public function avg(string $field, ?string $key = null, int $expire = 0): string
     {
         $this->select('AVG(' . $field . ') avg_value');
         return $this->value('avg_value', $key, $expire);
     }
 
-    public function count($field = '*', $key = null, $expire = 0)
+    public function count(string $field = '*', ?string $key = null, int $expire = 0): string
     {
         $this->select('COUNT(' . $field . ') num_rows');
         return $this->value('num_rows', $key, $expire);
     }
 
-    public function quote($value)
+    public function quote(string $value): string
     {
         if ($value === null) {
             return 'NULL';
@@ -817,7 +804,7 @@ class DB
         return $value;
     }
 
-    public function setCache($cache)
+    public function setCache($cache): void
     {
         $this->cache = null;
 
@@ -862,9 +849,9 @@ class DB
         return $this->cache;
     }
 
-    public function store($key, $value, $expire = 0)
+    public function store(string $key, $value, int $expire = 0): void
     {
-        $key = $this->key_prefix.$key;
+        $key = $this->key_prefix . $key;
 
         switch ($this->cache_type) {
             case 'memcached':
@@ -894,7 +881,7 @@ class DB
         }
     }
 
-    public function fetch($key)
+    public function fetch(string $key)
     {
         $key = $this->key_prefix . $key;
 
@@ -937,7 +924,7 @@ class DB
         return null;
     }
 
-    public function clear($key)
+    public function clear(string $key): bool
     {
         $key = $this->key_prefix . $key;
 
@@ -964,7 +951,7 @@ class DB
         }
     }
 
-    public function flush()
+    public function flush(): void
     {
         switch ($this->cache_type) {
             case 'memcached':
@@ -1001,11 +988,7 @@ class DB
         }
     }
 
-
-    
-
-
-    public function using($class)
+    public function using(object $class): self
     {
         if (is_string($class)) {
             $this->class = $class;
@@ -1086,7 +1069,7 @@ class DB
         return $this->class;
     }
 
-    public function remove($object)
+    public function remove($object): void
     {
         $this->using($object);
 
@@ -1100,7 +1083,7 @@ class DB
         }
     }
 
-    public function getProperties()
+    public function getProperties(): array
     {
         static $properties = [];
 
