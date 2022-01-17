@@ -1,6 +1,6 @@
 # What is Sulis?
 
-Sulis is a fast, simple, extensible framework for PHP
+A tiny php framework
 
 ```php
 require 'src/Sulis/Sulis.php';
@@ -12,7 +12,7 @@ Sulis::route('/', function () {
 Sulis::start();
 ```
 
-[Learn more](http://sulis.scenedev.com/learn)
+[Learn more](http://esyede.github.io/sulis)
 
 # Requirements
 
@@ -20,7 +20,7 @@ Sulis requires `PHP 7.4` or greater.
 
 # License
 
-Sulis is released under the [MIT](http://sulis.scenedev.com/license) license.
+Sulis is released under the [MIT](https://github.com/esyede/sulis/blob/main/LICENSE) license.
 
 # Installation
 

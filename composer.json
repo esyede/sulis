@@ -1,0 +1,24 @@
+{
+    "name": "esyede/sulis",
+    "description": "A tiny php framework.",
+    "homepage": "http://esyede.github.io/sulis",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mike Cao",
+            "email": "mike@esyede.com",
+            "homepage": "http://esyede.github.io/sulis",
+            "role": "Core Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.4|^8.0|^8.1",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "files": [ "src/Sulis/autoload.php", "src/Sulis/Sulis.php" ]
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    }
+}
