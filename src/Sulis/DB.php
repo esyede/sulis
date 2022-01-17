@@ -284,7 +284,7 @@ class DB
 
     public function distinct(bool $value = true): self
     {
-        $this->distinct = ($value) ? 'DISTINCT' : '';
+        $this->distinct = $value ? 'DISTINCT' : '';
         return $this;
     }
 
@@ -786,11 +786,11 @@ class DB
             if ($this->db !== null) {
                 switch ($this->db_type) {
                     case 'pdo':     return $this->db->quote($value);
-                    case 'mysqli':  return "'".$this->db->real_escape_string($value)."'";
-                    case 'mysql':   return "'".mysql_real_escape_string($value, $this->db)."'";
-                    case 'pgsql':   return "'".pg_escape_string($this->db, $value)."'";
-                    case 'sqlite':  return "'".sqlite_escape_string($value)."'";
-                    case 'sqlite3': return "'".$this->db->escapeString($value)."'";
+                    case 'mysqli':  return "'" . $this->db->real_escape_string($value) . "'";
+                    case 'mysql':   return "'" . mysql_real_escape_string($value, $this->db) . "'";
+                    case 'pgsql':   return "'" . pg_escape_string($this->db, $value) . "'";
+                    case 'sqlite':  return "'" . sqlite_escape_string($value) . "'";
+                    case 'sqlite3': return "'" . $this->db->escapeString($value) . "'";
                 }
             }
 
@@ -873,7 +873,7 @@ class DB
                 break;
 
             case 'file':
-                $file = $this->cache.'/'.md5($key);
+                $file = $this->cache . '/' . md5($key);
                 $data = ['value' => $value, 'expire' => ($expire > 0) ? (time() + $expire) : 0];
                 file_put_contents($file, serialize($data));
                 break;
@@ -890,12 +890,12 @@ class DB
         switch ($this->cache_type) {
             case 'memcached':
                 $value = $this->cache->get($key);
-                $this->is_cached = ($this->cache->getResultCode() === Memcached::RES_SUCCESS);
+                $this->is_cached = $this->cache->getResultCode() === \Memcached::RES_SUCCESS;
                 return $value;
 
             case 'memcache':
                 $value = $this->cache->get($key);
-                $this->is_cached = ($value !== false);
+                $this->is_cached = $value !== false;
                 return $value;
 
             case 'apc':
