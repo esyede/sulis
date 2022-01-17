@@ -48,19 +48,13 @@ class Validator
 
     public static function lang(?string $lang = null): string
     {
-        if ($lang !== null) {
-            static::$lang = $lang;
-        }
-
+        static::$lang = ($lang !== null) ? $lang : static::$lang;
         return static::$lang ?: 'en';
     }
 
     public static function langDir(?string $dir = null): string
     {
-        if ($dir !== null) {
-            static::$langDir = $dir;
-        }
-
+        static::$langDir = ($lang !== null) ? $dir : static::$langDir;
         return static::$langDir ?: dirname(__DIR__) . '/lang/validator';
     }
 
@@ -76,11 +70,7 @@ class Validator
             return $find[1];
         }
 
-        if (is_null($value) || (is_string($value) && trim($value) === '')) {
-            return false;
-        }
-
-        return true;
+        return (is_null($value) || (is_string($value) && trim($value) === ''));
     }
 
     protected function validateEquals($field, $value, array $params)
@@ -113,22 +103,17 @@ class Validator
 
     protected function validateInteger($field, $value, $params)
     {
-        if (isset($params[0]) && (bool) $params[0]) {
-            return preg_match('/^([0-9]|-[1-9]|-?[1-9][0-9]*)$/i', $value);
-        }
-
-        return filter_var($value, FILTER_VALIDATE_INT) !== false;
+        return (isset($params[0]) && (bool) $params[0])
+            ? preg_match('/^([0-9]|-[1-9]|-?[1-9][0-9]*)$/i', $value)
+            : filter_var($value, FILTER_VALIDATE_INT) !== false;
     }
 
     protected function validateLength($field, $value, $params)
     {
         $length = $this->stringLength($value);
-
-        if (isset($params[1])) {
-            return $length >= $params[0] && $length <= $params[1];
-        }
-
-        return ($length !== false) && $length == $params[0];
+        return isset($params[1])
+            ? ($length >= $params[0] && $length <= $params[1])
+            : (($length !== false) && $length === $params[0]);
     }
 
     protected function validateLengthBetween($field, $value, $params)
@@ -151,13 +136,7 @@ class Validator
 
     protected function stringLength($value)
     {
-        if (! is_string($value)) {
-            return false;
-        } elseif (function_exists('mb_strlen')) {
-            return mb_strlen($value);
-        }
-
-        return strlen($value);
+        return is_string($value) ? strlen($value) : false;
     }
 
     protected function validateMin($field, $value, $params)
@@ -184,11 +163,7 @@ class Validator
 
     protected function validateBetween($field, $value, $params)
     {
-        if (! is_numeric($value)) {
-            return false;
-        }
-
-        if (! isset($params[0]) || ! is_array($params[0]) || count($params[0]) !== 2) {
+        if (! is_numeric($value) || ! isset($params[0]) || ! is_array($params[0]) || count($params[0]) !== 2) {
             return false;
         }
 
@@ -198,33 +173,19 @@ class Validator
 
     protected function validateIn($field, $value, $params)
     {
-        $forceAsAssociative = false;
-
-        if (isset($params[2])) {
-            $forceAsAssociative = (bool) $params[2];
-        }
-
-        if ($forceAsAssociative || $this->isAssociativeArray($params[0])) {
-            $params[0] = array_keys($params[0]);
-        }
-
+        $forceAsAssociative = isset($params[2]) ? (bool) $params[2] : false;
+        $params[0] = ($forceAsAssociative || $this->isAssociativeArray($params[0])) ? array_keys($params[0]) : $params[0];
         $strict = isset($params[1]) ? $params[1] : false;
+
         return in_array($value, $params[0], $strict);
     }
 
     protected function validateListContains($field, $value, $params)
     {
-        $forceAsAssociative = false;
-
-        if (isset($params[2])) {
-            $forceAsAssociative = (bool) $params[2];
-        }
-
-        if ($forceAsAssociative || $this->isAssociativeArray($value)) {
-            $value = array_keys($value);
-        }
-
+        $forceAsAssociative = isset($params[2]) ? (bool) $params[2] : false;
+        $value = ($forceAsAssociative || $this->isAssociativeArray($value)) ? array_keys($value) : $value;
         $strict = isset($params[1]) ? $params[1] : false;
+
         return in_array($params[0], $value, $strict);
     }
 
@@ -286,21 +247,17 @@ class Validator
 
     protected function validateAscii($field, $value)
     {
-        if (function_exists('mb_detect_encoding')) {
-            return mb_detect_encoding($value, 'ASCII', true);
-        }
-
-        return 0 === preg_match('/[^\x00-\x7F]/', $value);
+        return (function_exists('mb_detect_encoding'))
+            ? mb_detect_encoding($value, 'ASCII', true)
+            : (0 === preg_match('/[^\x00-\x7F]/', $value));
     }
 
     protected function validateEmailDNS($field, $value)
     {
         if ($this->validateEmail($field, $value)) {
-            $domain = ltrim(stristr($value, '@'), '@') . '.';
-
-            if (function_exists('idn_to_ascii') && defined('INTL_IDNA_VARIANT_UTS46')) {
-                $domain = idn_to_ascii($domain, 0, INTL_IDNA_VARIANT_UTS46);
-            }
+            $domain = (function_exists('idn_to_ascii') && defined('INTL_IDNA_VARIANT_UTS46'))
+                ? idn_to_ascii($domain, 0, INTL_IDNA_VARIANT_UTS46)
+                : ltrim(stristr($value, '@'), '@') . '.';
 
             return checkdnsrr($domain, 'MX');
         }
@@ -413,12 +370,9 @@ class Validator
             for ($i = 0; $i < $strlen; $i++) {
                 $digit = (int) substr($number, $strlen - $i - 1, 1);
 
-                if ($i % 2 == 1) {
+                if ($i % 2 === 1) {
                     $subtotal = $digit * 2;
-
-                    if ($subtotal > 9) {
-                        $subtotal = ($subtotal - 10) + 1;
-                    }
+                    $subtotal = ($subtotal > 9) ? (($subtotal - 10) + 1) : $subtotal;
                 } else {
                     $subtotal = $digit;
                 }
@@ -475,19 +429,12 @@ class Validator
         $isInstanceOf = false;
 
         if (is_object($value)) {
-            if (is_object($params[0]) && $value instanceof $params[0]) {
-                $isInstanceOf = true;
-            }
-
-            if (get_class($value) === $params[0]) {
-                $isInstanceOf = true;
-            }
+            $isInstanceOf = ((is_object($params[0]) && $value instanceof $params[0])
+                || get_class($value) === $params[0]);
         }
 
         if (is_string($value)) {
-            if (is_string($params[0]) && get_class($value) === $params[0]) {
-                $isInstanceOf = true;
-            }
+            $isInstanceOf = (is_string($params[0]) && get_class($value) === $params[0]);
         }
 
         return $isInstanceOf;
@@ -520,11 +467,7 @@ class Validator
             }
         }
 
-        if ($conditionallyReq && (is_null($value) || is_string($value) && trim($value) === '')) {
-            return false;
-        }
-
-        return true;
+        return ($conditionallyReq && (is_null($value) || is_string($value) && trim($value) === ''));
     }
 
     protected function validateRequiredWithout($field, $value, $params, $fields)
@@ -568,17 +511,11 @@ class Validator
 
     protected function validateArrayHasKeys($field, $value, $params)
     {
-        if (! is_array($value) || ! isset($params[0])) {
+        if (! is_array($value) || ! isset($params[0]) || count($params[0]) === 0) {
             return false;
         }
 
-        $requiredFields = $params[0];
-
-        if (count($requiredFields) === 0) {
-            return false;
-        }
-
-        foreach ($requiredFields as $fieldName) {
+        foreach ($params[0] as $fieldName) {
             if (! array_key_exists($fieldName, $value)) {
                 return false;
             }
@@ -607,17 +544,10 @@ class Validator
         $values = [];
 
         foreach ($params as $param) {
-            if (is_array($param)) {
-                $param = "['" . implode("', '", $param) . "']";
-            }
-
-            if ($param instanceof DateTime) {
-                $param = $param->format('Y-m-d');
-            } else {
-                if (is_object($param)) {
-                    $param = get_class($param);
-                }
-            }
+            $param = is_array($param) ? "['" . implode("', '", $param) . "']" : $param;
+            $param = ($param instanceof DateTime)
+                ? $param->format('Y-m-d')
+                : (is_object($param) ? get_class($param) : $param);
 
             if (is_string($params[0]) && isset($this->labels[$param])) {
                 $param = $this->labels[$param];
@@ -643,7 +573,7 @@ class Validator
         $this->labels = [];
     }
 
-    protected function getPart($data, $identifiers, $allow_empty = false)
+    protected function getPart($data, $identifiers, $allowEmpty = false)
     {
         if (is_array($identifiers) && count($identifiers) === 0) {
             return [$data, false];
@@ -659,7 +589,7 @@ class Validator
             $values = [];
 
             foreach ($data as $row) {
-                [$value, $multiple] = $this->getPart($row, $identifiers, $allow_empty);
+                [$value, $multiple] = $this->getPart($row, $identifiers, $allowEmpty);
 
                 if ($multiple) {
                     $values = array_merge($values, $value);
@@ -670,19 +600,19 @@ class Validator
 
             return [$values, true];
         } elseif ($identifier === null || ! isset($data[$identifier])) {
-            if ($allow_empty) {
+            if ($allowEmpty) {
                 return [null, array_key_exists($identifier, $data)];
             }
 
             return [null, false];
         } elseif (count($identifiers) === 0) {
-            if ($allow_empty) {
+            if ($allowEmpty) {
                 return [null, array_key_exists($identifier, $data)];
             }
 
-            return [$data[$identifier], $allow_empty];
+            return [$data[$identifier], $allowEmpty];
         } else {
-            return $this->getPart($data[$identifier], $identifiers, $allow_empty);
+            return $this->getPart($data[$identifier], $identifiers, $allowEmpty);
         }
     }
 
@@ -697,11 +627,7 @@ class Validator
         }
 
         if (! $this->hasRule('required', $field) && ! in_array($validation['rule'], ['required', 'accepted'])) {
-            if ($multiple) {
-                return count($values) !== 0;
-            }
-
-            return (isset($values) && $values !== '');
+            return $multiple ? (count($values) !== 0) : (isset($values) && $values !== '');
         }
 
         return true;
@@ -720,12 +646,9 @@ class Validator
                 }
 
                 $errors = $this->getRules();
-
-                if (isset($errors[$v['rule']])) {
-                    $callback = $errors[$v['rule']];
-                } else {
-                    $callback = [$this, 'validate' . ucfirst($v['rule'])];
-                }
+                $callback = isset($errors[$v['rule']])
+                    ? $errors[$v['rule']]
+                    : [$this, 'validate' . ucfirst($v['rule'])];
 
                 if (! $multiple) {
                     $values = [$values];
@@ -748,6 +671,7 @@ class Validator
                     }
                 }
             }
+
             if ($setToBreak) {
                 break;
             }
@@ -774,7 +698,7 @@ class Validator
     protected function hasRule($name, $field)
     {
         foreach ($this->validations as $validation) {
-            if ($validation['rule'] == $name && in_array($field, $validation['fields'])) {
+            if ($validation['rule'] === $name && in_array($field, $validation['fields'])) {
                 return true;
             }
         }
@@ -801,9 +725,7 @@ class Validator
 
     public static function addRule($name, $callback, $message = null)
     {
-        if ($message === null) {
-            $message = 'Invalid';
-        }
+        $message = ($message === null) ? 'Invalid' : $message;
 
         static::assertRuleCallback($callback);
 
@@ -822,7 +744,7 @@ class Validator
         $rules = $this->getRules();
 
         while (isset($rules[$name])) {
-            $name = $orgName . '_' . rand(0, 10000);
+            $name = $orgName . '_' . random_int(0, 10000);
         }
 
         return $name;
@@ -831,7 +753,6 @@ class Validator
     public function hasValidator($name)
     {
         $rules = $this->getRules();
-
         return method_exists($this, 'validate' . ucfirst($name)) || isset($rules[$name]);
     }
 
@@ -860,16 +781,8 @@ class Validator
 
         $messages = $this->getRuleMessages();
         $message = isset($messages[$rule]) ? $messages[$rule] : 'Invalid';
-
-        if (function_exists('mb_strpos')) {
-            $notContains = mb_strpos($message, '{field}') === false;
-        } else {
-            $notContains = strpos($message, '{field}') === false;
-        }
-
-        if ($notContains) {
-            $message = '{field} ' . $message;
-        }
+        $notContains = strpos($message, '{field}') === false;
+        $message = $notContains ? '{field} ' . $message : $message;
 
         $this->validations[] = [
             'rule' => $rule,
@@ -929,10 +842,7 @@ class Validator
         foreach ($rules as $ruleType => $params) {
             if (is_array($params)) {
                 foreach ($params as $innerParams) {
-                    if (! is_array($innerParams)) {
-                        $innerParams = (array) $innerParams;
-                    }
-
+                    $innerParams = is_array($innerParams) ? $innerParams : (array) $innerParams;
                     array_unshift($innerParams, $ruleType);
                     call_user_func_array([$this, 'rule'], $innerParams);
                 }
