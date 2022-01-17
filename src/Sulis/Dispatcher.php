@@ -10,20 +10,19 @@ use InvalidArgumentException;
 class Dispatcher
 {
     protected array $events = [];
-
     protected array $filters = [];
 
     final public function run(string $name, array $params = [])
     {
         $output = '';
 
-        if (!empty($this->filters[$name]['before'])) {
+        if (! empty($this->filters[$name]['before'])) {
             $this->filter($this->filters[$name]['before'], $params, $output);
         }
 
         $output = self::execute($this->get($name), $params);
 
-        if (!empty($this->filters[$name]['after'])) {
+        if (! empty($this->filters[$name]['after'])) {
             $this->filter($this->filters[$name]['after'], $params, $output);
         }
 
@@ -91,7 +90,9 @@ class Dispatcher
             return call_user_func_array($func, $params);
         }
 
-        switch (count($params)) {
+        $count = count($params);
+
+        switch ($count) {
             case 0:  return $func();
             case 1:  return $func($params[0]);
             case 2:  return $func($params[0], $params[1]);
@@ -106,8 +107,9 @@ class Dispatcher
     {
         [$class, $method] = $func;
         $instance = is_object($class);
+        $count = count($params);
 
-        switch (count($params)) {
+        switch ($count) {
             case 0:
                 return $instance
                     ? $class->$method()
