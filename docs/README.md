@@ -12,66 +12,60 @@ Sulis::route('/', function () {
 Sulis::start();
 ```
 
-[Learn more](http://esyede.github.io/sulis)
-
 # Requirements
 
-Sulis requires `PHP 7.4` or greater.
+Sulis membutuhkan `PHP 7.4` atau lebih tinggi.
 
 # License
 
-Sulis is released under the [MIT](https://github.com/esyede/sulis/blob/main/LICENSE) license.
+Sulis dirilis di bawah lisensi [MIT](https://github.com/esyede/sulis/blob/main/LICENSE).
 
 # Installation
 
-1\. Download the files.
-
-If you're using [Composer](https://getcomposer.org/), you can run the following command:
-
-```
+**1. Unduh file**
+Jika anda menggunakan [Composer](https://getcomposer.org/), anda dapat menjalankan perintah berikut:
+```bash
 composer require esyede/sulis
 ```
 
-OR you can [download](https://github.com/esyede/sulis/archive/master.zip) them directly
-and extract them to your web directory.
+ATAU, Anda dapat [mengunduh](https://github.com/esyede/sulis/archive/master.zip) secara langsung dan mengekstraknya ke direktori web anda.
 
-2\. Configure your webserver.
+**2. Konfigurasikan server web anda.**
 
-For *Apache*, edit your `.htaccess` file with the following:
+Untuk *Apache*, edit file `.htaccess` anda seperti berikut ini:
 
-```
+```apacheconf
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php [QSA,L]
 ```
 
-**Note**: If you need to use sulis in a subdirectory add the line `RewriteBase /subdir/` just after `RewriteEngine On`.
+  > [!TIP] Jika anda perlu menggunakan sulis dalam subdirektori,
+tambahkan baris `RewriteBase /subdir/` tepat setelah `RewriteEngine On`.
 
-For *Nginx*, add the following to your server declaration:
-
-```
+Untuk *Nginx*, tambahkan berikut ini ke deklarasi server anda:
+```nginx
 server {
     location / {
         try_files $uri $uri/ /index.php;
     }
 }
 ```
-3\. Create your `index.php` file.
 
-First include the framework.
+**3. Buat file `index.php` anda.**
 
+Pertama, include frameworknya:
 ```php
 require 'src/Sulis/Sulis.php';
 ```
 
-If you're using Composer, run the autoloader instead.
-
+Jika anda menggunakan Composer, jalankan autoloader sebagai gantinya:
 ```php
 require 'vendor/autoload.php';
 ```
 
-Then define a route and assign a function to handle the request.
+Kemudian tentukan rute dan tetapkan fungsi untuk menangani rute tersebut:
 
 ```php
 Sulis::route('/', function () {
@@ -79,24 +73,20 @@ Sulis::route('/', function () {
 });
 ```
 
-Finally, start the framework.
-
+Terakhir, hidupkan framework.
 ```php
 Sulis::start();
 ```
 
 # Routing
-
-Routing in Sulis is done by matching a URL pattern with a callback function.
-
+Perutean di Sulis dilakukan dengan mencocokkan pola URL dengan fungsi callback.
 ```php
 Sulis::route('/', function () {
     echo 'hello world!';
 });
 ```
 
-The callback can be any object that is callable. So you can use a regular function:
-
+Callback dapat berupa objek apa pun yang sifatnya callable. Jadi, anda juga dapat menggunakan fungsi reguler:
 ```php
 function hello () {
     echo 'hello world!';
@@ -105,8 +95,7 @@ function hello () {
 Sulis::route('/', 'hello');
 ```
 
-Or a class method:
-
+Atau method milik sebuah kelas:
 ```php
 class Greeting
 {
@@ -116,10 +105,10 @@ class Greeting
     }
 }
 
-Sulis::route('/', array('Greeting', 'hello'));
+Sulis::route('/', [Greeting::class, 'hello']);
 ```
 
-Or an object method:
+Atau methode milik object:
 
 ```php
 class Greeting
@@ -137,17 +126,14 @@ class Greeting
 
 $greeting = new Greeting();
 
-Sulis::route('/', array($greeting, 'hello'));
+Sulis::route('/', [$greeting, 'hello']);
 ```
 
-Routes are matched in the order they are defined. The first route to match a
-request will be invoked.
+Rute dicocokkan sesuai urutan yang anda ditentukan. Rute pertama yang cocok dengan request akan dijalankan.
 
 ## Method Routing
-
-By default, route patterns are matched against all request methods. You can respond
-to specific methods by placing an identifier before the URL.
-
+Secara default, pola rute dicocokkan dengan semua http request method. Anda dapat merespon
+ke method tertentu dengan menempatkan identifier sebelum URL.
 ```php
 Sulis::route('GET /', function () {
     echo 'I received a GET request.';
@@ -158,7 +144,7 @@ Sulis::route('POST /', function () {
 });
 ```
 
-You can also map multiple methods to a single callback by using a `|` delimiter:
+Anda juga dapat memetakan beberapa method ke satu callback dengan menggunakan pembatas `|`:
 
 ```php
 Sulis::route('GET|POST /', function () {
@@ -167,46 +153,36 @@ Sulis::route('GET|POST /', function () {
 ```
 
 ## Regular Expressions
-
-You can use regular expressions in your routes:
-
+Anda dapat menggunakan regular expression di rute anda:
 ```php
 Sulis::route('/user/[0-9]+', function () {
-    // This will match /user/1234
+    // Ini akan cocok dengan /user/1234
 });
 ```
 
 ## Named Parameters
-
-You can specify named parameters in your routes which will be passed along to
-your callback function.
-
+Anda dapat menentukan named parameter di rute anda yang nantinya akan dioper ke fungsi callback anda.
 ```php
 Sulis::route('/@name/@id', function ($name, $id) {
     echo "hello, $name ($id)!";
 });
 ```
 
-You can also include regular expressions with your named parameters by using
-the `:` delimiter:
-
+Anda juga dapat menyertakan regular expression dengan named parameter anda dengan menggunakan pembatas `:`:
 ```php
 Sulis::route('/@name/@id:[0-9]{3}', function ($name, $id) {
-    // This will match /bob/123
-    // But will not match /bob/12345
+    // Ini akan cocok dengan /bob/123
+    // Tetapi tidak akan cocok dengan /bob/12345
 });
 ```
 
-Matching regex groups `()` with named parameters isn't supported.
+  > Pencocokan grup regex `()` dengan named parameter tidak didukung.
 
 ## Optional Parameters
-
-You can specify named parameters that are optional for matching by wrapping
-segments in parentheses.
-
+Anda dapat menentukan named parameter opsional untuk pencocokan dengan membungkus segmen dalam tanda kurung.
 ```php
 Sulis::route('/blog(/@year(/@month(/@day)))', function ($year, $month, $day) {
-    // This will match the following URLS:
+    // Ini akan cocok dengan URL berikut:
     // /blog/2012/12/10
     // /blog/2012/12
     // /blog/2012
@@ -214,238 +190,214 @@ Sulis::route('/blog(/@year(/@month(/@day)))', function ($year, $month, $day) {
 });
 ```
 
-Any optional parameters that are not matched will be passed in as NULL.
+Parameter opsional apa pun yang tidak cocok akan dioper sebagai `NULL`.
 
 ## Wildcards
-
-Matching is only done on individual URL segments. If you want to match multiple
-segments you can use the `*` wildcard.
-
+Pencocokan hanya dilakukan pada segmen URL individual. Jika anda ingin mencocokkan beberapa
+segmen, anda dapat menggunakan karakter `*`:
 ```php
 Sulis::route('/blog/*', function () {
-    // This will match /blog/2000/02/01
+    // Ini akan cocok dengan /blog/2000/02/01
 });
 ```
 
-To route all requests to a single callback, you can do:
-
+Untuk merutekan semua request ke satu callback, anda dapat melakukan:
 ```php
 Sulis::route('*', function () {
-    // Do something
+    // Lakukan sesuatu disini
 });
 ```
 
 ## Passing
-
-You can pass execution on to the next matching route by returning `true` from
-your callback function.
-
+Anda dapat mereturn eksekusi ke rute pencocokan berikutnya
+dengan mereturn `true` dari fungsi callback anda.
 ```php
 Sulis::route('/user/@name', function ($name) {
-    // Check some condition
-    if ($name != "Bob") {
-        // Continue to next route
+    // Periksa beberapa kondisi
+    if ($name !== "Bob") {
+        // Lanjutkan ke rute berikutnya
         return true;
     }
 });
 
 Sulis::route('/user/*', function () {
-    // This will get called
+    // Ini akan dieksekusi
 });
 ```
 
 ## Route Info
-
-If you want to inspect the matching route information, you can request for the route
-object to be passed to your callback by passing in `true` as the third parameter in
-the route method. The route object will always be the last parameter passed to your
-callback function.
+Jika Anda ingin memeriksa informasi rute, anda dapat mengambilnya dari object rute
+yang akan dioper ke callback anda dengan mereturn `true` sebagai parameter ketiga di
+method `route`. Objek route akan selalu menjadi parameter terakhir yang dioper ke fungsi callback anda.
 
 ```php
 Sulis::route('/', function ($route) {
-    // Array of HTTP methods matched against
+    // Array http method milik request saat ini
     $route->methods;
 
-    // Array of named parameters
+    // Array named milik request saat ini
     $route->params;
 
-    // Matching regular expression
+    // Regular expression yang cocok milik request saat ini
     $route->regex;
 
-    // Contains the contents of any '*' used in the URL pattern
+    // Berisi string '*' yang digunakan dalam pola URL
     $route->splat;
 }, true);
 ```
 
 # Extending
-
-Sulis is designed to be an extensible framework. The framework comes with a set
-of default methods and components, but it allows you to map your own methods,
-register your own classes, or even override existing classes and methods.
+Sulis dirancang untuk menjadi framework yang mudah dikustomisasi. Framework ini datang dengan satu set
+method dan komponen default, tetapi anda juga boleh memetakan komponen baru ,
+maupun menimpa kelas dan method yang ada.
 
 ## Mapping Methods
-
-To map your own custom method, you use the `map` function:
-
+Untuk memetakan method kustom anda sendiri, gunakan method `map`:
 ```php
-// Map your method
+// Cara mapping
 Sulis::map('hello', function ($name) {
     echo "hello $name!";
 });
 
-// Call your custom method
+// Cara pemanggilan
 Sulis::hello('Bob');
 ```
 
 ## Registering Classes
-
-To register your own class, you use the `register` function:
-
+Untuk mendaftarkan kelas anda sendiri, gunakan method `register`:
 ```php
-// Register your class
-Sulis::register('user', 'User');
+// Cara pendaftaran
+Sulis::register('user', User::class);
 
-// Get an instance of your class
+// Cara instansiasi
 $user = Sulis::user();
 ```
 
-The register method also allows you to pass along parameters to your class
-constructor. So when you load your custom class, it will come pre-initialized.
-You can define the constructor parameters by passing in an additional array.
-Here's an example of loading a database connection:
-
+Method `register` juga memungkinkan anda mengoper parameter ke konstruktor kelas anda.
+Jadi ketika anda memuat kelas kustom anda, kelas itu akan dipra-inisialisasi.
+Anda dapat menentukan parameter konstruktor dengan mengoper array tambahan.
+Berikut ini contoh memuat koneksi database:
 ```php
-// Register class with constructor parameters
-Sulis::register('db', 'PDO', array('mysql:host=localhost;dbname=test','user','pass'));
+// Daftarkan kelas dengan parameter konstruktor
+Sulis::register('db', PDO::class, ['mysql:host=localhost;dbname=test', 'user', 'pass']);
 
-// Get an instance of your class
-// This will create an object with the defined parameters
+// Cara instansiasi kelas anda
+// Ini akan membuat objek dengan parameter yang anda tentukan tadi
 //
-//     new PDO('mysql:host=localhost;dbname=test','user','pass');
+//     new PDO('mysql:host=localhost;dbname=test', 'user', 'pass');
 //
 $db = Sulis::db();
 ```
 
-If you pass in an additional callback parameter, it will be executed immediately
-after class construction. This allows you to perform any set up procedures for your
-new object. The callback function takes one parameter, an instance of the new object.
-
+Jika anda mengoper parameter callback tambahan, ia akan segera dieksekusi
+setelah konstruksi kelas dilakukan. Ini memungkinkan anda untuk melakukan prosedur pengaturan apa pun untuk
+objek baru. Fungsi callback ini menerima satu parameter, sebuah instance dari objek baru.
 ```php
-// The callback will be passed the object that was constructed
-Sulis::register('db', 'PDO', array('mysql:host=localhost;dbname=test','user','pass'), function ($db) {
+//  Callback akan dioper ke objek yang dibuat
+Sulis::register('db', PDO::class, ['mysql:host=localhost;dbname=test', 'user', 'pass'], function ($db) {
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 });
 ```
 
-By default, every time you load your class you will get a shared instance.
-To get a new instance of a class, simply pass in `false` as a parameter:
-
+Secara default, setiap kali anda memuat kelas anda, anda akan mendapatkan shared instance (singleton).
+Untuk mendapatkan instance baru dari sebuah kelas, cukup berikan `false` sebagai parameter:
 ```php
-// Shared instance of the class
+// Mengambil instance singleton
 $shared = Sulis::db();
 
-// New instance of the class
+// Mengambil instance baru
 $new = Sulis::db(false);
 ```
 
-Keep in mind that mapped methods have precedence over registered classes. If you
-declare both using the same name, only the mapped method will be invoked.
+Perlu diingat bahwa method yang dipetakan lebih diprioritaskan daripada kelas yang terdaftar. Jika anda
+mendeklarasikan keduanya menggunakan nama yang sama, hanya method yang dipetakan yang akan dieksekusi.
 
 # Overriding
+Anda juga dapat mengganti fungsionalitas default sulis dengan kebutuhan anda sendiri, tanpa harus mengubah kode apapun.
 
-Sulis allows you to override its default functionality to suit your own needs,
-without having to modify any code.
-
-For example, when Sulis cannot match a URL to a route, it invokes the `notFound`
-method which sends a generic `HTTP 404` response. You can override this behavior
-by using the `map` method:
-
+Misalnya, ketika sulis tidak dapat mencocokkan URL dengan rute, sulis memanggil method `notFound`
+yang mengirimkan respon generik `HTTP 404`. Anda dapat mengganti perilaku ini dengan menggunakan method `map`:
 ```php
 Sulis::map('notFound', function () {
-    // Display custom 404 page
-    include 'errors/404.html';
+    // Tampilkan halaman 404 kustom
+    include 'custom-errors/404.html';
 });
 ```
 
-Sulis also allows you to replace core components of the framework.
-For example you can replace the default Router class with your own custom class:
-
+Juga memungkinkan untuk mengganti komponen inti dari framework ini.
+Misalnya, anda dapat mengganti kelas `Router` default dengan kelas kustom anda sendiri:
 ```php
-// Register your custom class
-Sulis::register('router', 'MyRouter');
+// Mendaftarkan kelas kustom anda
+Sulis::register('router', MyRouter::class);
 
-// When Sulis loads the Router instance, it will load your class
+// Ketika sulis memuat instance Router, kelas kustom anda yang akan dimuat
 $myrouter = Sulis::router();
 ```
 
-Framework methods like `map` and `register` however cannot be overridden. You will
-get an error if you try to do so.
+  > Metode inti seperti `map` dan `register` tidak dapat diganti.
 
 # Filtering
+Sulis memungkinkan anda untuk memfilter method sebelum dan sesudah dieksekusi.
+Anda dapat memfilter method default bawaan framework maupun method kustom yang telah anda petakan.
 
-Sulis allows you to filter methods before and after they are called. There are no
-predefined hooks you need to memorize. You can filter any of the default framework
-methods as well as any custom methods that you've mapped.
-
-A filter function looks like this:
-
+Fungsi filter terlihat seperti ini:
 ```php
 function (&$params, &$output) {
-    // Filter code
+    // Kode filter
 }
 ```
 
-Using the passed in variables you can manipulate the input parameters and/or the output.
+Dengan menggunakan variabel yang dioper (pada contoh diatas variabel `&$params` dan `&$output`),
+anda dapat memanipulasi parameter input dan/atau output.
 
-You can have a filter run before a method by doing:
-
+Anda dapat menjalankan filter sebelum suatu method dieksekusi:
 ```php
 Sulis::before('start', function (&$params, &$output) {
-    // Do something
+    // Lakukan sesuatu disini
 });
 ```
 
-You can have a filter run after a method by doing:
-
+Anda juga dapat menjalankan filter setelahnya:
 ```php
 Sulis::after('start', function (&$params, &$output) {
-    // Do something
+    // Lakukan sesuatu disini
 });
 ```
 
-You can add as many filters as you want to any method. They will be called in the
-order that they are declared.
+Anda dapat menambahkan filter sebanyak yang anda inginkan, ke method manapun.
+Mereka akan dieksekusi sesuai urutan yang anda tentukan.
 
-Here's an example of the filtering process:
+Berikut adalah contoh proses filtering:
 
 ```php
-// Map a custom method
+// Petakan metode custom
 Sulis::map('hello', function ($name) {
     return "Hello, $name!";
 });
 
-// Add a before filter
+// Tambahkan filter 'before'
 Sulis::before('hello', function (&$params, &$output) {
-    // Manipulate the parameter
+    // Memanipulasi parameter
     $params[0] = 'Fred';
 });
 
-// Add an after filter
+// Tambahkan filter 'after'
 Sulis::after('hello', function (&$params, &$output) {
-    // Manipulate the output
+    // Memanipulasi parameter
     $output .= " Have a nice day!";
 });
 
-// Invoke the custom method
+// Panggil metode kustomya
 echo Sulis::hello('Bob');
 ```
 
-This should display:
+Hasil yang akan anda dapatkan:
+```
+Hello Fred! Have a nice day!
+```
 
-    Hello Fred! Have a nice day!
-
-If you have defined multiple filters, you can break the chain by returning `false`
-in any of your filter functions:
+Jika anda telah mendeklarasikan beberapa filter,
+anda dapat memutuskan rantai eksekusinya dengan mereturn `false` di salah satu fungsi filter:
 
 ```php
 Sulis::before('start', function (&$params, &$output) {
@@ -455,11 +407,11 @@ Sulis::before('start', function (&$params, &$output) {
 Sulis::before('start', function (&$params, &$output) {
     echo 'two';
 
-    // This will end the chain
+    // Ini akan memutuskan rantai eksekusinya
     return false;
 });
 
-// This will not get called
+// Ini tidak akan dieksekusi
 Sulis::before('start', function (&$params, &$output) {
     echo 'three';
 });
