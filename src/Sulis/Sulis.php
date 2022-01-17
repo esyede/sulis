@@ -15,14 +15,17 @@ class Sulis
 
     private function __construct()
     {
+        //
     }
 
     private function __destruct()
     {
+        //
     }
 
     private function __clone()
     {
+        //
     }
 
     

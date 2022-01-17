@@ -14,7 +14,7 @@ final class Route
     public string $splat = '';
     public bool $pass = false;
 
-    public function __construct(string $pattern, $callback, array $methods, bool $pass)
+    public function __construct(string $pattern, callable $callback, array $methods, bool $pass)
     {
         $this->pattern = $pattern;
         $this->callback = $callback;
@@ -57,11 +57,7 @@ final class Route
                     : '(?P<' . $matches[1] . '>[^/\?]+)';
         }, $regex);
 
-        if ('/' === $last_char) {
-            $regex .= '?';
-        } else {
-            $regex .= '/?';
-        }
+        $regex .= ('/' === $last_char) ? '?' : '/?';
 
         if (preg_match('#^' . $regex . '(?:\?.*)?$#' . ($case_sensitive ? '' : 'i'), $url, $matches)) {
             foreach ($ids as $k => $v) {
